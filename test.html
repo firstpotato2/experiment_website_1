@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        .fullscreen-img {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background-color: black;
+        }
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .controls button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-img">
+        <img id="testImage" src="" alt="Test Image" style="max-width: 100%; max-height: 100%;">
+    </div>
+    <div class="controls">
+        <button onclick="pauseTest()">Pause</button>
+        <button onclick="nextImage()">Next Image</button>
+    </div>
+
+    <script>
+        let images = {
+            A: {
+                regular: [...Array(40).keys()].map(i => `images/A/regular${i+1}.jpg`),
+                special: [...Array(10).keys()].map(i => `images/A/special${i+1}.jpg`)
+            },
+            B: {
+                regular: [...Array(40).keys()].map(i => `images/B/regular${i+1}.jpg`),
+                special: [...Array(10).keys()].map(i => `images/B/special${i+1}.jpg`)
+            }
+        };
+        let shownImages = { A: [], B: [] };
+        let currentGroup = 'A';
+        let currentImage = null;
+        let startTime = null;
+        let totalTime = { A: 0, B: 0 };
+        let specialQuestions = [...Array(20).keys()].map(i => `Question ${i+1}`);
+        
+        function showImage(image) {
+            const imgElement = document.getElementById('testImage');
+            imgElement.src = image;
+            startTime = Date.now();
+        }
+
+        function nextImage() {
+            if (images[currentGroup].regular.length === 0 && images[currentGroup].special.length === 0) {
+                currentGroup = currentGroup === 'A' ? 'B' : 'A';
+                if (images[currentGroup].regular.length === 0 && images[currentGroup].special.length === 0) {
+                    finishTest();
+                    return;
+                }
+            }
+            let imageList = Math.random() < 0.2 ? images[currentGroup].special : images[currentGroup].regular;
+            if (imageList.length === 0) imageList = images[currentGroup].regular;
+            currentImage = imageList.splice(Math.floor(Math.random() * imageList.length), 1)[0];
+            shownImages[currentGroup].push(currentImage);
+            showImage(currentImage);
+        }
+
+        function pauseTest() {
+            if (currentImage) {
+                let timeSpent = Date.now() - startTime;
+                totalTime[currentGroup] += timeSpent;
+                // Save the state and navigate to pause page
+                sessionStorage.setItem('currentGroup', currentGroup);
+                sessionStorage.setItem('currentImage', currentImage);
+                sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+                sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
+                window.location.href = 'pause.html';
+            }
+        }
+
+        function finishTest() {
+            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+            sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
+            window.location.href = 'finish.html';
+        }
+
+        window.onload = function() {
+            if (sessionStorage.getItem('currentGroup')) {
+                currentGroup = sessionStorage.getItem('currentGroup');
+                currentImage = sessionStorage.getItem('currentImage');
+                shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
+                totalTime = JSON.parse(sessionStorage.getItem('totalTime'));
+                showImage(currentImage);
+            } else {
+                nextImage();
+            }
+        }
+    </script>
+</body>
+</html>
+

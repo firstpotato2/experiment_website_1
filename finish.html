@@ -1,1 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finish</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <p>本次測驗結果對我們的實驗非常重要</p>
+    <p>感謝您撥空參加本次實驗 d(`･∀･)b</p>
+    <button onclick="downloadRecords()">下載紀錄</button>
+
+    <script>
+        function downloadRecords() {
+            let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
+            let totalTime = JSON.parse(sessionStorage.getItem('totalTime'));
+            let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers'));
+            let accuracy = sessionStorage.getItem('accuracy');
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Image,Time(ms)\n";
+            for (let group in shownImages) {
+                shownImages[group].forEach(image => {
+                    csvContent += `${image},${totalTime[group]}\n`;
+                });
+            }
+            csvContent += "\nUser Answers,Accuracy\n";
+            userAnswers.forEach((ans, idx) => {
+                csvContent += `${ans}\n`;
+            });
+            csvContent += `,${accuracy}%\n`;
+
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "test_records.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+    </script>
+</body>
+</html>
  
