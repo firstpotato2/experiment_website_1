@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Page</title>
+    <title>測試頁面</title>
     <style>
         body, html {
             margin: 0;
@@ -36,8 +36,8 @@
         <img id="testImage" src="" alt="Test Image" style="max-width: 100%; max-height: 100%;">
     </div>
     <div class="controls">
-        <button onclick="pauseTest()">Pause</button>
-        <button onclick="nextImage()">Next Image</button>
+        <button onclick="pauseTest()">暫停</button>
+        <button onclick="nextImage()">下一張圖片</button>
     </div>
 
     <script>
@@ -83,7 +83,6 @@
             if (currentImage) {
                 let timeSpent = Date.now() - startTime;
                 totalTime[currentGroup] += timeSpent;
-                // Save the state and navigate to pause page
                 sessionStorage.setItem('currentGroup', currentGroup);
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
@@ -112,4 +111,3 @@
     </script>
 </body>
 </html>
-
