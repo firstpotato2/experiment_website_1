@@ -107,14 +107,14 @@
         }
 
         function isShuffleValid(shuffled) {
-            for (let i = 0; i < shuffled.length - 1; i++) {
-                if (shuffled[i].includes('special') && shuffled[i + 1].includes('special')) {
-                    return false;
-                }
-            }
             for (let i = 0; i < 20; i++) {
                 const segment = shuffled.slice(i * 5, (i + 1) * 5);
                 if (!segment.some(img => img.includes('special'))) {
+                    return false;
+                }
+            }
+            for (let i = 0; i < shuffled.length - 1; i++) {
+                if (shuffled[i].includes('special') && shuffled[i + 1].includes('special')) {
                     return false;
                 }
             }
@@ -201,13 +201,7 @@
                 nextImage();
             }
             timerInterval = setInterval(updateTimer, 1000);
-        };
-
-        window.addEventListener('popstate', function(event) {
-            window.location.href = 'index.html';
-        });
-
-        history.pushState(null, null, window.location.href);
+        }
     </script>
 </body>
 </html>
