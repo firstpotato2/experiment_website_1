@@ -29,12 +29,21 @@
             margin: 5px;
             font-size: 16px;
         }
+        .timer {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
     <div class="fullscreen-img">
         <img id="testImage" src="" alt="Test Image" style="max-width: 100%; max-height: 100%;">
     </div>
+    <div class="timer" id="timer">0:00</div>
     <div class="controls">
         <button onclick="pauseTest()">暫停</button>
         <button onclick="nextImage()">下一張圖片</button>
@@ -58,6 +67,7 @@
         let startTime = null;
         let totalTime = { A: 0, B: 0 };
         let userAnswers = [];
+        let timerInterval;
 
         function showImage(image) {
             const imgElement = document.getElementById('testImage');
@@ -65,14 +75,26 @@
             startTime = Date.now();
         }
 
+        function updateTimer() {
+            const timer = document.getElementById('timer');
+            setInterval(() => {
+                const now = Date.now();
+                const elapsed = Math.floor((now - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }, 1000);
+        }
+
         function nextImage() {
+            clearInterval(timerInterval);
             if (allShownImages.length === 100) {
                 finishTest();
                 return;
             }
 
             let imageList = Math.random() < 0.2 ? images[currentGroup].special : images[currentGroup].regular;
-            while (imageList.length === 0 || allShownImages.includes(imageList[0])) {
+            if (imageList.length === 0) {
                 imageList = images[currentGroup].regular.length > 0 ? images[currentGroup].regular : images[currentGroup].special;
             }
 
@@ -80,16 +102,13 @@
             shownImages[currentGroup].push(currentImage);
             allShownImages.push(currentImage);
 
-            if (currentImage.includes('special')) {
-                sessionStorage.setItem('currentImage', currentImage);
-                window.location.href = 'special.html';
-            } else {
-                showImage(currentImage);
-            }
+            showImage(currentImage);
+            timerInterval = setInterval(updateTimer, 1000);
         }
 
         function pauseTest() {
             if (currentImage) {
+                clearInterval(timerInterval);
                 let timeSpent = Date.now() - startTime;
                 totalTime[currentGroup] += timeSpent;
                 sessionStorage.setItem('currentGroup', currentGroup);
@@ -102,6 +121,7 @@
         }
 
         function finishTest() {
+            clearInterval(timerInterval);
             sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
             sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
             sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
@@ -119,6 +139,7 @@
             } else {
                 nextImage();
             }
+            timerInterval = setInterval(updateTimer, 1000);
         }
     </script>
 </body>
