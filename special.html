@@ -9,20 +9,33 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
         }
         .fullscreen-img {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100%;
+            height: 50%;
             background-color: black;
         }
+        .question-container {
+            text-align: center;
+            color: white;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .options label {
+            margin: 10px;
+        }
         .controls {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-top: 20px;
         }
         .controls button {
             padding: 10px 20px;
@@ -35,20 +48,22 @@
     <div class="fullscreen-img">
         <img id="specialImage" src="" alt="Special Image" style="max-width: 100%; max-height: 100%;">
     </div>
-    <div class="question-container" style="display: none;">
+    <div class="question-container">
         <h1 id="questionText"></h1>
         <div class="options">
-            <button id="optionA" onclick="selectOption('A')"></button>
-            <button id="optionB" onclick="selectOption('B')"></button>
-            <button id="optionC" onclick="selectOption('C')"></button>
-            <button id="optionD" onclick="selectOption('D')"></button>
+            <input type="radio" id="optionA" name="answer" value="A">
+            <label for="optionA" id="labelA"></label>
+            <input type="radio" id="optionB" name="answer" value="B">
+            <label for="optionB" id="labelB"></label>
+            <input type="radio" id="optionC" name="answer" value="C">
+            <label for="optionC" id="labelC"></label>
+            <input type="radio" id="optionD" name="answer" value="D">
+            <label for="optionD" id="labelD"></label>
+        </div>
+        <div class="controls">
+            <button onclick="submitAnswer()">送出</button>
         </div>
     </div>
-    <div class="controls">
-        <button onclick="pauseTest()">暫停</button>
-        <button onclick="nextImage()">下一張圖片</button>
-    </div>
-
     <script>
         const questions = {
             "images/A/special/image (1).jpg": "圖片裡的男子上衣為什麼顏色？",
@@ -102,15 +117,20 @@
 
         document.getElementById('specialImage').src = currentImage;
         document.getElementById('questionText').innerText = questionText;
-        document.getElementById('optionA').innerText = optionText[0];
-        document.getElementById('optionB').innerText = optionText[1];
-        document.getElementById('optionC').innerText = optionText[2];
-        document.getElementById('optionD').innerText = optionText[3];
+        document.getElementById('labelA').innerText = optionText[0];
+        document.getElementById('labelB').innerText = optionText[1];
+        document.getElementById('labelC').innerText = optionText[2];
+        document.getElementById('labelD').innerText = optionText[3];
 
-        function selectOption(option) {
-            userAnswers.push(option);
-            sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
-            window.location.href = 'test.html';
+        function submitAnswer() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            if (selectedOption) {
+                userAnswers.push(selectedOption.value);
+                sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
+                window.location.href = 'test.html';
+            } else {
+                alert('請選擇一個答案');
+            }
         }
 
         function pauseTest() {
@@ -128,13 +148,8 @@
 
         window.onload = function() {
             document.querySelector('.fullscreen-img').style.display = 'block';
-            document.querySelector('.question-container').style.display = 'none';
-        };
-
-        function nextImage() {
-            document.querySelector('.fullscreen-img').style.display = 'none';
             document.querySelector('.question-container').style.display = 'block';
-        }
+        };
     </script>
 </body>
 </html>

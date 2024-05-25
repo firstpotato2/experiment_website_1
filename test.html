@@ -10,12 +10,16 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         .fullscreen-img {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100%;
+            height: 80%;
             background-color: black;
         }
         .controls {
@@ -119,17 +123,16 @@
             const imgElement = document.getElementById('testImage');
             imgElement.src = image;
             startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
         }
 
         function updateTimer() {
             const timer = document.getElementById('timer');
-            setInterval(() => {
-                const now = Date.now();
-                const elapsed = Math.floor((now - startTime) / 1000);
-                const minutes = Math.floor(elapsed / 60);
-                const seconds = elapsed % 60;
-                timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            }, 1000);
+            const now = Date.now();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
 
         function nextImage() {
@@ -139,8 +142,11 @@
                 return;
             }
 
+            let timeSpent = Date.now() - startTime;
+            totalTime += timeSpent;
+            shownImages.push({ image: currentImage, time: timeSpent });
+
             currentImage = shuffledImages[shownImages.length];
-            shownImages.push(currentImage);
 
             if (currentImage.includes('special')) {
                 sessionStorage.setItem('currentImage', currentImage);
@@ -149,15 +155,15 @@
                 window.location.href = 'special.html';
             } else {
                 showImage(currentImage);
-                timerInterval = setInterval(updateTimer, 1000);
             }
         }
 
         function pauseTest() {
+            clearInterval(timerInterval);
             if (currentImage) {
-                clearInterval(timerInterval);
                 let timeSpent = Date.now() - startTime;
                 totalTime += timeSpent;
+                shownImages.push({ image: currentImage, time: timeSpent });
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
                 sessionStorage.setItem('totalTime', totalTime);
@@ -169,6 +175,7 @@
             clearInterval(timerInterval);
             let timeSpent = Date.now() - startTime;
             totalTime += timeSpent;
+            shownImages.push({ image: currentImage, time: timeSpent });
             sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
             sessionStorage.setItem('totalTime', totalTime);
             sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
@@ -190,7 +197,6 @@
             } else {
                 nextImage();
             }
-            timerInterval = setInterval(updateTimer, 1000);
         }
     </script>
 </body>
