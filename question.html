@@ -26,10 +26,14 @@
             align-items: center;
             margin-top: 20px;
         }
-        .options label {
-            margin: 10px;
+        .option {
+            display: flex;
+            align-items: center;
             width: 100%;
-            text-align: left;
+            max-width: 300px;
+        }
+        .option input {
+            margin-right: 10px;
         }
         .controls {
             margin-top: 20px;
@@ -45,14 +49,22 @@
     <div class="question-container">
         <h1 id="questionText"></h1>
         <div class="options">
-            <input type="radio" id="optionA" name="answer" value="A">
-            <label for="optionA" id="labelA"></label>
-            <input type="radio" id="optionB" name="answer" value="B">
-            <label for="optionB" id="labelB"></label>
-            <input type="radio" id="optionC" name="answer" value="C">
-            <label for="optionC" id="labelC"></label>
-            <input type="radio" id="optionD" name="answer" value="D">
-            <label for="optionD" id="labelD"></label>
+            <div class="option">
+                <input type="radio" id="optionA" name="answer" value="A">
+                <label for="optionA" id="labelA"></label>
+            </div>
+            <div class="option">
+                <input type="radio" id="optionB" name="answer" value="B">
+                <label for="optionB" id="labelB"></label>
+            </div>
+            <div class="option">
+                <input type="radio" id="optionC" name="answer" value="C">
+                <label for="optionC" id="labelC"></label>
+            </div>
+            <div class="option">
+                <input type="radio" id="optionD" name="answer" value="D">
+                <label for="optionD" id="labelD"></label>
+            </div>
         </div>
         <div class="controls">
             <button onclick="submitAnswer()">送出</button>
@@ -120,6 +132,10 @@
             if (selectedOption) {
                 userAnswers.push(selectedOption.value);
                 sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
+                let nextImageIndex = JSON.parse(sessionStorage.getItem('shownImages')).length;
+                let shuffledImages = JSON.parse(sessionStorage.getItem('shuffledImages'));
+                let nextImage = shuffledImages[nextImageIndex];
+                sessionStorage.setItem('currentImage', nextImage);
                 window.location.href = 'test.html';
             } else {
                 alert('請選擇一個答案');
