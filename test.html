@@ -66,7 +66,7 @@
         let totalTime = 0;
         let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
         let timerInterval;
-        let nextImagePending = false;
+        let specialCount = 0;
 
         function showImage(image) {
             const imgElement = document.getElementById('testImage');
@@ -86,28 +86,33 @@
         }
 
         function nextImage() {
-            if (nextImagePending) {
-                nextImagePending = false;
-                window.location.href = 'special.html';
-                return;
-            }
-
             clearInterval(timerInterval);
             if (shownImages.length === 100) {
                 finishTest();
                 return;
             }
 
-            let isSpecial = Math.random() < 0.2 || shownImages.length % 5 === 4; // 保證特殊圖片每五張出現一次
+            let isSpecial = false;
             let group = Math.random() < 0.5 ? 'A' : 'B';
-            let imageList = isSpecial ? images[group].special : images[group].regular;
+            let imageList;
+
+            if (specialCount < Math.floor(shownImages.length / 5)) {
+                isSpecial = true;
+                specialCount++;
+                imageList = images[group].special;
+            } else {
+                imageList = images[group].regular;
+            }
 
             if (imageList.length === 0) {
-                group = group === 'A' ? 'B' : 'A'; // 如果當前組的圖片用完，則切換到另一組
+                group = group === 'A' ? 'B' : 'A';
                 imageList = isSpecial ? images[group].special : images[group].regular;
             }
 
-            currentImage = imageList.splice(Math.floor(Math.random() * imageList.length), 1)[0];
+            do {
+                currentImage = imageList.splice(Math.floor(Math.random() * imageList.length), 1)[0];
+            } while (shownImages.includes(currentImage));
+
             shownImages.push(currentImage);
 
             showImage(currentImage);
@@ -117,7 +122,7 @@
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
                 sessionStorage.setItem('totalTime', totalTime);
-                nextImagePending = true;
+                window.location.href = 'special.html';
             }
         }
 
