@@ -60,14 +60,13 @@
                 special: [...Array(10).keys()].map(i => `images/B/special/image (${i+1}).jpg`)
             }
         };
-        let shownImages = { A: [], B: [] };
-        let allShownImages = [];
-        let currentGroup = Math.random() < 0.5 ? 'A' : 'B';
+        let shownImages = [];
         let currentImage = null;
         let startTime = null;
-        let totalTime = { A: 0, B: 0 };
+        let totalTime = 0;
         let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
         let timerInterval;
+        let nextImagePending = false;
 
         function showImage(image) {
             const imgElement = document.getElementById('testImage');
@@ -87,32 +86,38 @@
         }
 
         function nextImage() {
+            if (nextImagePending) {
+                nextImagePending = false;
+                window.location.href = 'special.html';
+                return;
+            }
+
             clearInterval(timerInterval);
-            if (allShownImages.length === 100) {
+            if (shownImages.length === 100) {
                 finishTest();
                 return;
             }
 
-            let isSpecial = Math.random() < 0.2;
-            let imageList = isSpecial ? images[currentGroup].special : images[currentGroup].regular;
+            let isSpecial = Math.random() < 0.2 || shownImages.length % 5 === 4; // 保證特殊圖片每五張出現一次
+            let group = Math.random() < 0.5 ? 'A' : 'B';
+            let imageList = isSpecial ? images[group].special : images[group].regular;
+
             if (imageList.length === 0) {
-                imageList = images[currentGroup].regular.length > 0 ? images[currentGroup].regular : images[currentGroup].special;
+                group = group === 'A' ? 'B' : 'A'; // 如果當前組的圖片用完，則切換到另一組
+                imageList = isSpecial ? images[group].special : images[group].regular;
             }
 
             currentImage = imageList.splice(Math.floor(Math.random() * imageList.length), 1)[0];
-            shownImages[currentGroup].push(currentImage);
-            allShownImages.push(currentImage);
+            shownImages.push(currentImage);
 
             showImage(currentImage);
             timerInterval = setInterval(updateTimer, 1000);
 
             if (isSpecial) {
-                sessionStorage.setItem('currentGroup', currentGroup);
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
-                sessionStorage.setItem('allShownImages', JSON.stringify(allShownImages));
-                sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
-                window.location.href = 'special.html';
+                sessionStorage.setItem('totalTime', totalTime);
+                nextImagePending = true;
             }
         }
 
@@ -120,12 +125,10 @@
             if (currentImage) {
                 clearInterval(timerInterval);
                 let timeSpent = Date.now() - startTime;
-                totalTime[currentGroup] += timeSpent;
-                sessionStorage.setItem('currentGroup', currentGroup);
+                totalTime += timeSpent;
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
-                sessionStorage.setItem('allShownImages', JSON.stringify(allShownImages));
-                sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
+                sessionStorage.setItem('totalTime', totalTime);
                 window.location.href = 'pause.html';
             }
         }
@@ -133,20 +136,18 @@
         function finishTest() {
             clearInterval(timerInterval);
             let timeSpent = Date.now() - startTime;
-            totalTime[currentGroup] += timeSpent;
+            totalTime += timeSpent;
             sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
-            sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
+            sessionStorage.setItem('totalTime', totalTime);
             sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
             window.location.href = 'finish.html';
         }
 
         window.onload = function() {
-            if (sessionStorage.getItem('currentGroup')) {
-                currentGroup = sessionStorage.getItem('currentGroup');
+            if (sessionStorage.getItem('currentImage')) {
                 currentImage = sessionStorage.getItem('currentImage');
                 shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
-                allShownImages = JSON.parse(sessionStorage.getItem('allShownImages'));
-                totalTime = JSON.parse(sessionStorage.getItem('totalTime'));
+                totalTime = parseInt(sessionStorage.getItem('totalTime'), 10);
                 showImage(currentImage);
             } else {
                 nextImage();
@@ -156,3 +157,4 @@
     </script>
 </body>
 </html>
+

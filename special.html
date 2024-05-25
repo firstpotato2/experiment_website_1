@@ -67,6 +67,32 @@
                 "前面的兩隻浣熊騎著什麼？"
             ]
         };
+        const options = {
+            A: [
+                ["(A) 藍綠色", "(B) 淺藍色", "(C) 白色", "(D) 黑色"],
+                ["(A) 無邊際的沙漠", "(B) 百花盛開的花海", "(C) 雲霧繚繞的山景", "(D) 愜意的海濱的別墅"],
+                ["(A) 白色", "(B) 橘色", "(C) 灰色", "(D) 圖片中沒有雲"],
+                ["(A) 粉紅色", "(B) 黃色", "(C) 咖啡色", "(D) 藍綠色"],
+                ["(A) 藍色", "(B) 紅色", "(C) 黃色", "(D) 綠色"],
+                ["(A) 彩色", "(B) 黑白"],
+                ["(A) 橘色", "(B) 白色", "(C) 藍綠色", "(D) 以上皆是"],
+                ["(A) 有", "(B) 沒有"],
+                ["(A) 白色", "(B) 紅色", "(C) 橘色", "(D) 黑色"],
+                ["(A) 咖啡色", "(B) 紅色", "(C) 黑色", "(D) 黃色"]
+            ],
+            B: [
+                ["(A) 清晨", "(B) 中午", "(C) 黃昏", "(D) 夜晚"],
+                ["(A) 有", "(B) 沒有，她看向她的左側", "(C) 沒有，她看向她的右側", "(D) 沒有，她沒有睜眼"],
+                ["(A) 3", "(B) 5", "(C) 4", "(D) 6"],
+                ["(A) 拉麵", "(B) 泡麵", "(C) 火鍋", "(D) 素食"],
+                ["(A) 不，那是隻鳥", "(B) 不，那是隻蝴蝶", "(C) 不，那是精靈", "(D) 當然是鴿子"],
+                ["(A) 埋伏且吃掉獵物", "(B) 使勁逃命", "(C) 無助的吃草", "(D) 愉快的跨羊欄"],
+                ["(A) 左邊的雞閉著，右邊的雞開著", "(B) 兩個都閉著", "(C) 左邊的雞開著，右邊的雞閉著", "(D) 兩個都開著"],
+                ["(A) 藍白黃", "(B) 黑白灰", "(C) 粉黑橘", "(D) 橘白黃"],
+                ["(A) 4", "(B) 8", "(C) 6", "(D) 5"],
+                ["(A) 汽車", "(B) 腳踏車", "(C) 浣熊", "(D) 摩托車"]
+            ]
+        };
         const answers = {
             A: ['B', 'D', 'B', 'D', 'A', 'A', 'D', 'A', 'C', 'D'],
             B: ['C', 'C', 'B', 'A', 'B', 'D', 'C', 'B', 'D', 'D']
@@ -76,8 +102,12 @@
         let currentImage = sessionStorage.getItem('currentImage');
         let questionIndex = parseInt(currentImage.match(/\((\d+)\)/)[1]) - 1;
         let questionText = questions[currentGroup][questionIndex];
+        let optionText = options[currentGroup][questionIndex];
 
         document.getElementById('questionText').innerText = questionText;
+        document.querySelectorAll('.options button').forEach((btn, idx) => {
+            btn.innerText = optionText[idx];
+        });
 
         function selectOption(option) {
             userAnswers.push(option);
