@@ -33,7 +33,7 @@
             let totalTime = JSON.parse(sessionStorage.getItem('totalTime'));
             let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers'));
             let accuracy = sessionStorage.getItem('accuracy');
-            let csvFilename = sessionStorage.getItem('csvFilename');
+            let csvFilename = "experiment_results.csv"; // 這裡設定了 CSV 的檔案名稱
 
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Image,Time(ms)\n";
@@ -58,3 +58,4 @@
     </script>
 </body>
 </html>
+

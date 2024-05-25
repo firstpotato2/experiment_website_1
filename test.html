@@ -62,11 +62,11 @@
         };
         let shownImages = { A: [], B: [] };
         let allShownImages = [];
-        let currentGroup = 'A';
+        let currentGroup = Math.random() < 0.5 ? 'A' : 'B';
         let currentImage = null;
         let startTime = null;
         let totalTime = { A: 0, B: 0 };
-        let userAnswers = [];
+        let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
         let timerInterval;
 
         function showImage(image) {
@@ -93,7 +93,8 @@
                 return;
             }
 
-            let imageList = Math.random() < 0.2 ? images[currentGroup].special : images[currentGroup].regular;
+            let isSpecial = Math.random() < 0.2;
+            let imageList = isSpecial ? images[currentGroup].special : images[currentGroup].regular;
             if (imageList.length === 0) {
                 imageList = images[currentGroup].regular.length > 0 ? images[currentGroup].regular : images[currentGroup].special;
             }
@@ -104,6 +105,15 @@
 
             showImage(currentImage);
             timerInterval = setInterval(updateTimer, 1000);
+
+            if (isSpecial) {
+                sessionStorage.setItem('currentGroup', currentGroup);
+                sessionStorage.setItem('currentImage', currentImage);
+                sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+                sessionStorage.setItem('allShownImages', JSON.stringify(allShownImages));
+                sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
+                window.location.href = 'special.html';
+            }
         }
 
         function pauseTest() {
@@ -122,6 +132,8 @@
 
         function finishTest() {
             clearInterval(timerInterval);
+            let timeSpent = Date.now() - startTime;
+            totalTime[currentGroup] += timeSpent;
             sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
             sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
             sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
