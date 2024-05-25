@@ -32,20 +32,28 @@
             let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
             let totalTime = JSON.parse(sessionStorage.getItem('totalTime'));
             let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers'));
+            let accuracy = sessionStorage.getItem('accuracy');
+            let csvFilename = sessionStorage.getItem('csvFilename');
+
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Image,Time(ms)\n";
-            shownImages.forEach((image, index) => {
-                csvContent += `${image},${totalTime[index]}\n`;
+            csvContent += "Image,Time(ms),Group\n";
+            shownImages.forEach((image, idx) => {
+                let group = image.includes('A') ? 'A' : 'B';
+                csvContent += `${image},${totalTime[idx]},${group}\n`;
             });
+            let totalTimeA = totalTime.reduce((acc, val, idx) => shownImages[idx].includes('A') ? acc + val : acc, 0);
+            let totalTimeB = totalTime.reduce((acc, val, idx) => shownImages[idx].includes('B') ? acc + val : acc, 0);
+            csvContent += `\nTotal Time A (ms),${totalTimeA}\n`;
+            csvContent += `Total Time B (ms),${totalTimeB}\n`;
             csvContent += "\nUser Answers\n";
-            userAnswers.forEach((ans, idx) => {
+            userAnswers.forEach((ans) => {
                 csvContent += `${ans}\n`;
             });
 
             let encodedUri = encodeURI(csvContent);
             let link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "experiment_results.csv");
+            link.setAttribute("download", csvFilename);
             document.body.appendChild(link);
             link.click();
         }

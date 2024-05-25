@@ -37,7 +37,7 @@
     </div>
     <div class="controls">
         <button onclick="pauseTest()">暫停</button>
-        <button onclick="showQuestion()">顯示問題</button>
+        <button onclick="nextImage()">下一張圖片</button>
     </div>
 
     <script>
@@ -117,21 +117,28 @@
         function selectOption(option) {
             userAnswers.push(option);
             sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
-            window.location.href = 'test.html';
+            nextImage();
         }
 
-        function showQuestion() {
-            document.querySelector('.fullscreen-img').style.display = 'none';
-            document.querySelector('.controls').innerHTML = `
-                <div class="question-container">
-                    <h1 id="questionText">${questionText}</h1>
-                    <div class="options">
-                        <button id="optionA" onclick="selectOption('A')">${optionText[0]}</button>
-                        <button id="optionB" onclick="selectOption('B')">${optionText[1]}</button>
-                        <button id="optionC" onclick="selectOption('C')">${optionText[2]}</button>
-                        <button id="optionD" onclick="selectOption('D')">${optionText[3]}</button>
-                    </div>
-                </div>`;
+        function nextImage() {
+            let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
+            let totalTime = parseInt(sessionStorage.getItem('totalTime'), 10);
+            if (shownImages.length === 100) {
+                finishTest();
+                return;
+            }
+
+            let currentImage = shownImages[shownImages.length - 1];
+            shownImages.push(currentImage);
+            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+            showImage(currentImage);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function showImage(image) {
+            const imgElement = document.getElementById('specialImage');
+            imgElement.src = image;
+            startTime = Date.now();
         }
 
         function pauseTest() {
@@ -146,6 +153,20 @@
             sessionStorage.setItem('totalTime', totalTime);
             window.location.href = 'pause.html';
         }
+
+        function finishTest() {
+            clearInterval(timerInterval);
+            let timeSpent = Date.now() - startTime;
+            totalTime += timeSpent;
+            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+            sessionStorage.setItem('totalTime', totalTime);
+            sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
+            window.location.href = 'finish.html';
+        }
+
+        window.onload = function() {
+            showImage(currentImage);
+        };
     </script>
 </body>
 </html>

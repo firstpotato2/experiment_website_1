@@ -142,14 +142,14 @@
             currentImage = shuffledImages[shownImages.length];
             shownImages.push(currentImage);
 
-            showImage(currentImage);
-            timerInterval = setInterval(updateTimer, 1000);
-
             if (currentImage.includes('special')) {
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
                 sessionStorage.setItem('totalTime', totalTime);
                 window.location.href = 'special.html';
+            } else {
+                showImage(currentImage);
+                timerInterval = setInterval(updateTimer, 1000);
             }
         }
 
