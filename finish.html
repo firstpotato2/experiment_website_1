@@ -77,8 +77,8 @@
                 }
             });
 
-            let totalTimeA = shownImages.reduce((acc, val) => val.image.includes('A') ? acc + val.time : acc, 0);
-            let totalTimeB = shownImages.reduce((acc, val) => val.image.includes('B') ? acc + val.time : acc, 0);
+            let totalTimeA = shownImages.reduce((acc, val) => val.image ? (val.image.includes('A') ? acc + val.time : acc) : acc, 0);
+            let totalTimeB = shownImages.reduce((acc, val) => val.image ? (val.image.includes('B') ? acc + val.time : acc) : acc, 0);
             csvContent += `\nTotal Time A (ms),${totalTimeA}\n`;
             csvContent += `Total Time B (ms),${totalTimeB}\n`;
             csvContent += "\nUser Answers\n";
