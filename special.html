@@ -5,28 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>特殊問題</title>
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        body, html {
             margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        .question-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .options {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .options button {
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
         }
         .fullscreen-img {
             display: flex;
@@ -35,22 +18,25 @@
             height: 100%;
             background-color: black;
         }
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .controls button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
     <div class="fullscreen-img">
         <img id="specialImage" src="" alt="Special Image" style="max-width: 100%; max-height: 100%;">
     </div>
-    <div class="question-container" style="display: none;">
-        <h1 id="questionText"></h1>
-        <div class="options">
-            <button id="optionA" onclick="selectOption('A')">選項 A</button>
-            <button id="optionB" onclick="selectOption('B')">選項 B</button>
-            <button id="optionC" onclick="selectOption('C')">選項 C</button>
-            <button id="optionD" onclick="selectOption('D')">選項 D</button>
-        </div>
-    </div>
     <div class="controls">
+        <button onclick="pauseTest()">暫停</button>
         <button onclick="showQuestion()">顯示問題</button>
     </div>
 
@@ -127,11 +113,6 @@
         let optionText = options[currentImage];
 
         document.getElementById('specialImage').src = currentImage;
-        document.getElementById('questionText').innerText = questionText;
-        document.getElementById('optionA').innerText = optionText[0];
-        document.getElementById('optionB').innerText = optionText[1];
-        document.getElementById('optionC').innerText = optionText[2];
-        document.getElementById('optionD').innerText = optionText[3];
 
         function selectOption(option) {
             userAnswers.push(option);
@@ -141,7 +122,29 @@
 
         function showQuestion() {
             document.querySelector('.fullscreen-img').style.display = 'none';
-            document.querySelector('.question-container').style.display = 'block';
+            document.querySelector('.controls').innerHTML = `
+                <div class="question-container">
+                    <h1 id="questionText">${questionText}</h1>
+                    <div class="options">
+                        <button id="optionA" onclick="selectOption('A')">${optionText[0]}</button>
+                        <button id="optionB" onclick="selectOption('B')">${optionText[1]}</button>
+                        <button id="optionC" onclick="selectOption('C')">${optionText[2]}</button>
+                        <button id="optionD" onclick="selectOption('D')">${optionText[3]}</button>
+                    </div>
+                </div>`;
+        }
+
+        function pauseTest() {
+            let currentImage = sessionStorage.getItem('currentImage');
+            let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
+            let totalTime = parseInt(sessionStorage.getItem('totalTime'), 10);
+            clearInterval(timerInterval);
+            let timeSpent = Date.now() - startTime;
+            totalTime += timeSpent;
+            sessionStorage.setItem('currentImage', currentImage);
+            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+            sessionStorage.setItem('totalTime', totalTime);
+            window.location.href = 'pause.html';
         }
     </script>
 </body>
