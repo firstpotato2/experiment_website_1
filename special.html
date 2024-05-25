@@ -16,6 +16,7 @@
         }
         .question-container {
             text-align: center;
+            margin-bottom: 20px;
         }
         .options {
             display: flex;
@@ -33,10 +34,10 @@
     <div class="question-container">
         <h1 id="questionText"></h1>
         <div class="options">
-            <button onclick="selectOption('A')">選項 A</button>
-            <button onclick="selectOption('B')">選項 B</button>
-            <button onclick="selectOption('C')">選項 C</button>
-            <button onclick="selectOption('D')">選項 D</button>
+            <button id="optionA" onclick="selectOption('A')">選項 A</button>
+            <button id="optionB" onclick="selectOption('B')">選項 B</button>
+            <button id="optionC" onclick="selectOption('C')">選項 C</button>
+            <button id="optionD" onclick="selectOption('D')">選項 D</button>
         </div>
     </div>
 
@@ -98,16 +99,16 @@
             B: ['C', 'C', 'B', 'A', 'B', 'D', 'C', 'B', 'D', 'D']
         };
         let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
-        let currentGroup = sessionStorage.getItem('currentGroup');
-        let currentImage = sessionStorage.getItem('currentImage');
+        let currentGroup = currentImage.split("/")[1];  // 假設 currentImage 的格式是 "images/A/special/image (1).jpg"
         let questionIndex = parseInt(currentImage.match(/\((\d+)\)/)[1]) - 1;
         let questionText = questions[currentGroup][questionIndex];
         let optionText = options[currentGroup][questionIndex];
 
         document.getElementById('questionText').innerText = questionText;
-        document.querySelectorAll('.options button').forEach((btn, idx) => {
-            btn.innerText = optionText[idx];
-        });
+        document.getElementById('optionA').innerText = optionText[0];
+        document.getElementById('optionB').innerText = optionText[1];
+        document.getElementById('optionC').innerText = optionText[2];
+        document.getElementById('optionD').innerText = optionText[3];
 
         function selectOption(option) {
             userAnswers.push(option);
