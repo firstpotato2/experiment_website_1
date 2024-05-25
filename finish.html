@@ -33,20 +33,55 @@
             let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers'));
             let csvFilename = sessionStorage.getItem('csvFilename');
 
+            let correctAnswers = {
+                "images/A/special/image (1).jpg": "C",
+                "images/A/special/image (2).jpg": "C",
+                "images/A/special/image (3).jpg": "A",
+                "images/A/special/image (4).jpg": "B",
+                "images/A/special/image (5).jpg": "C",
+                "images/A/special/image (6).jpg": "A",
+                "images/A/special/image (7).jpg": "A",
+                "images/A/special/image (8).jpg": "B",
+                "images/A/special/image (9).jpg": "D",
+                "images/A/special/image (10).jpg": "A",
+                "images/B/special/image (1).jpg": "C",
+                "images/B/special/image (2).jpg": "B",
+                "images/B/special/image (3).jpg": "D",
+                "images/B/special/image (4).jpg": "C",
+                "images/B/special/image (5).jpg": "D",
+                "images/B/special/image (6).jpg": "A",
+                "images/B/special/image (7).jpg": "D",
+                "images/B/special/image (8).jpg": "B",
+                "images/B/special/image (9).jpg": "A",
+                "images/B/special/image (10).jpg": "D"
+            };
+
+            let correctCount = userAnswers.reduce((acc, answer, index) => {
+                let imgIndex = Math.floor(index / 10) * 5 + (index % 10);
+                let img = shownImages[imgIndex].image;
+                if (correctAnswers[img] === answer) {
+                    acc++;
+                }
+                return acc;
+            }, 0);
+            let accuracy = (correctCount / userAnswers.length) * 100;
+
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Image,Time(ms),Group\n";
             shownImages.forEach((entry) => {
                 let group = entry.image.includes('A') ? 'A' : 'B';
                 csvContent += `${entry.image},${entry.time},${group}\n`;
             });
+
             let totalTimeA = shownImages.reduce((acc, val) => val.image.includes('A') ? acc + val.time : acc, 0);
             let totalTimeB = shownImages.reduce((acc, val) => val.image.includes('B') ? acc + val.time : acc, 0);
             csvContent += `\nTotal Time A (ms),${totalTimeA}\n`;
             csvContent += `Total Time B (ms),${totalTimeB}\n`;
             csvContent += "\nUser Answers\n";
-            userAnswers.forEach((ans) => {
-                csvContent += `${ans}\n`;
+            userAnswers.forEach((ans, index) => {
+                csvContent += `Question ${index + 1},${ans}\n`;
             });
+            csvContent += `\nAccuracy,${accuracy}%\n`;
 
             let encodedUri = encodeURI(csvContent);
             let link = document.createElement("a");
