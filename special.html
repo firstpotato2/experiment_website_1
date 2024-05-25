@@ -3,88 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>特殊圖片</title>
+    <title>特殊問題</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             background-color: black;
+            color: white;
         }
-        .fullscreen-img {
+        .question-container {
+            text-align: center;
+            width: 100%;
+        }
+        .options {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 80%;
+            margin-top: 20px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 300px;
+        }
+        .option input {
+            margin-right: 10px;
         }
         .controls {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-top: 20px;
         }
         .controls button {
             padding: 10px 20px;
-            margin: 5px;
             font-size: 16px;
-        }
-        .timer {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            font-size: 24px;
+            margin: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="fullscreen-img">
-        <img id="specialImage" src="" alt="Special Image" style="max-width: 100%; max-height: 100%;">
+    <div class="question-container">
+        <h1 id="questionText"></h1>
+        <div class="options">
+            <div class="option">
+                <input type="radio" id="optionA" name="answer" value="A">
+                <label for="optionA" id="labelA"></label>
+            </div>
+            <div class="option">
+                <input type="radio" id="optionB" name="answer" value="B">
+                <label for="optionB" id="labelB"></label>
+            </div>
+            <div class="option">
+                <input type="radio" id="optionC" name="answer" value="C">
+                <label for="optionC" id="labelC"></label>
+            </div>
+            <div class="option">
+                <input type="radio" id="optionD" name="answer" value="D">
+                <label for="optionD" id="labelD"></label>
+            </div>
+        </div>
+        <div class="controls">
+            <button onclick="submitAnswer()">送出</button>
+        </div>
     </div>
-    <div class="timer" id="timer">0:00</div>
-    <div class="controls">
-        <button onclick="pauseTest()">暫停</button>
-        <button onclick="nextImage()">下一張圖片</button>
-    </div>
-
     <script>
+        const questions = {
+            "images/A/special/image (1).jpg": "圖片裡的男子上衣為什麼顏色？",
+            "images/A/special/image (2).jpg": "下列哪一個描述符合上一張風景照片？",
+            "images/A/special/image (3).jpg": "圖片裡的雲是什麼顏色的？",
+            "images/A/special/image (4).jpg": "盤子裡的馬卡龍大部分是什麼顏色的？",
+            "images/A/special/image (5).jpg": "圖片裡沒有出現下列哪個顏色？",
+            "images/A/special/image (6).jpg": "前一張圖片是彩色的還是黑白的？",
+            "images/A/special/image (7).jpg": "地呱球是什麼顏色的？",
+            "images/A/special/image (8).jpg": "前一張圖片裡的男士有沒有塗口紅？",
+            "images/A/special/image (9).jpg": "刺蝟手上拿的吉他是什麼顏色的？",
+            "images/A/special/image (10).jpg": "貓漢堡的麵包是什麼顏色的？",
+            "images/B/special/image (1).jpg": "你覺得圖片裡是一天中的什麼時間？",
+            "images/B/special/image (2).jpg": "圖片中的女人有沒有看鏡頭？",
+            "images/B/special/image (3).jpg": "圖片裡有幾個蛋糕？",
+            "images/B/special/image (4).jpg": "前一張圖片裡的食物是什麼？",
+            "images/B/special/image (5).jpg": "請問那是鴿子嗎？",
+            "images/B/special/image (6).jpg": "前一張圖片的狼在做什麼？",
+            "images/B/special/image (7).jpg": "前面兩隻雞的嘴巴是開著的嗎？",
+            "images/B/special/image (8).jpg": "圖片裡的動物在你的認知中應該是什麼顏色的？",
+            "images/B/special/image (9).jpg": "圖片裡有幾隻貓？",
+            "images/B/special/image (10).jpg": "前面的兩隻浣熊騎著什麼？"
+        };
+        const options = {
+            "images/A/special/image (1).jpg": ["(A) 藍綠色", "(B) 淺藍色", "(C) 白色", "(D) 黑色"],
+            "images/A/special/image (2).jpg": ["(A) 無邊際的沙漠", "(B) 百花盛開的花海", "(C) 雲霧繚繞的山景", "(D) 愜意的海濱的別墅"],
+            "images/A/special/image (3).jpg": ["(A) 白色", "(B) 橘色", "(C) 灰色", "(D) 圖片中沒有雲"],
+            "images/A/special/image (4).jpg": ["(A) 粉紅色", "(B) 黃色", "(C) 咖啡色", "(D) 藍綠色"],
+            "images/A/special/image (5).jpg": ["(A) 藍色", "(B) 紅色", "(C) 黃色", "(D) 綠色"],
+            "images/A/special/image (6).jpg": ["(A) 彩色", "(B) 黑白"],
+            "images/A/special/image (7).jpg": ["(A) 橘色", "(B) 白色", "(C) 藍綠色", "(D) 以上皆是"],
+            "images/A/special/image (8).jpg": ["(A) 有", "(B) 沒有"],
+            "images/A/special/image (9).jpg": ["(A) 白色", "(B) 紅色", "(C) 橘色", "(D) 黑色"],
+            "images/A/special/image (10).jpg": ["(A) 咖啡色", "(B) 紅色", "(C) 黑色", "(D) 黃色"],
+            "images/B/special/image (1).jpg": ["(A) 清晨", "(B) 中午", "(C) 黃昏", "(D) 夜晚"],
+            "images/B/special/image (2).jpg": ["(A) 有", "(B) 沒有，她看向她的左側", "(C) 沒有，她看向她的右側", "(D) 沒有，她沒有睜眼"],
+            "images/B/special/image (3).jpg": ["(A) 3", "(B) 5", "(C) 4", "(D) 6"],
+            "images/B/special/image (4).jpg": ["(A) 拉麵", "(B) 泡麵", "(C) 火鍋", "(D) 素食"],
+            "images/B/special/image (5).jpg": ["(A) 不，那是隻鳥", "(B) 不，那是隻蝴蝶", "(C) 不，那是精靈", "(D) 當然是鴿子"],
+            "images/B/special/image (6).jpg": ["(A) 埋伏且吃掉獵物", "(B) 使勁逃命", "(C) 無助的吃草", "(D) 愉快的跨羊欄"],
+            "images/B/special/image (7).jpg": ["(A) 左邊的雞閉著，右邊的雞開著", "(B) 兩個都閉著", "(C) 左邊的雞開著，右邊的雞閉著", "(D) 兩個都開著"],
+            "images/B/special/image (8).jpg": ["(A) 藍白黃", "(B) 黑白灰", "(C) 粉黑橘", "(D) 橘白黃"],
+            "images/B/special/image (9).jpg": ["(A) 4", "(B) 8", "(C) 6", "(D) 5"],
+            "images/B/special/image (10).jpg": ["(A) 汽車", "(B) 腳踏車", "(C) 浣熊", "(D) 摩托車"]
+        };
+
+        let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
         let currentImage = sessionStorage.getItem('currentImage');
-        let startTime = null;
-        let timerInterval;
+        let questionText = questions[currentImage];
+        let optionText = options[currentImage];
 
-        function showImage(image) {
-            const imgElement = document.getElementById('specialImage');
-            imgElement.src = image;
-            startTime = Date.now();
-            timerInterval = setInterval(updateTimer, 1000);
-        }
+        document.getElementById('questionText').innerText = questionText;
+        document.getElementById('labelA').innerText = optionText[0];
+        document.getElementById('labelB').innerText = optionText[1];
+        document.getElementById('labelC').innerText = optionText[2];
+        document.getElementById('labelD').innerText = optionText[3];
 
-        function updateTimer() {
-            const timer = document.getElementById('timer');
-            const now = Date.now();
-            const elapsed = Math.floor((now - startTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-            timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        }
-
-        function nextImage() {
-            clearInterval(timerInterval);
-            let timeSpent = Date.now() - startTime;
-            let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
-            shownImages.push({ image: currentImage, time: timeSpent });
-            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
-            window.location.href = 'question.html';
+        function submitAnswer() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            if (selectedOption) {
+                userAnswers.push(selectedOption.value);
+                sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
+                let nextImageIndex = JSON.parse(sessionStorage.getItem('shownImages')).length;
+                let shuffledImages = JSON.parse(sessionStorage.getItem('shuffledImages'));
+                let nextImage = shuffledImages[nextImageIndex];
+                sessionStorage.setItem('currentImage', nextImage);
+                window.location.href = 'test.html';
+            } else {
+                alert('請選擇一個答案');
+            }
         }
 
         window.onload = function() {
-            showImage(currentImage);
-        }
+            document.querySelector('.question-container').style.display = 'block';
+        };
     </script>
 </body>
 </html>
