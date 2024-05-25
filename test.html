@@ -50,16 +50,43 @@
     </div>
 
     <script>
-        let images = {
-            A: {
-                regular: [...Array(40).keys()].map(i => `images/A/regular/image (${i+1}).jpg`),
-                special: [...Array(10).keys()].map(i => `images/A/special/image (${i+1}).jpg`)
-            },
-            B: {
-                regular: [...Array(40).keys()].map(i => `images/B/regular/image (${i+1}).jpg`),
-                special: [...Array(10).keys()].map(i => `images/B/special/image (${i+1}).jpg`)
-            }
-        };
+        let images = [
+            "images/A/regular/image (1).jpg", "images/A/regular/image (2).jpg", "images/A/regular/image (3).jpg",
+            "images/A/regular/image (4).jpg", "images/A/regular/image (5).jpg", "images/A/regular/image (6).jpg",
+            "images/A/regular/image (7).jpg", "images/A/regular/image (8).jpg", "images/A/regular/image (9).jpg",
+            "images/A/regular/image (10).jpg", "images/A/regular/image (11).jpg", "images/A/regular/image (12).jpg",
+            "images/A/regular/image (13).jpg", "images/A/regular/image (14).jpg", "images/A/regular/image (15).jpg",
+            "images/A/regular/image (16).jpg", "images/A/regular/image (17).jpg", "images/A/regular/image (18).jpg",
+            "images/A/regular/image (19).jpg", "images/A/regular/image (20).jpg", "images/A/regular/image (21).jpg",
+            "images/A/regular/image (22).jpg", "images/A/regular/image (23).jpg", "images/A/regular/image (24).jpg",
+            "images/A/regular/image (25).jpg", "images/A/regular/image (26).jpg", "images/A/regular/image (27).jpg",
+            "images/A/regular/image (28).jpg", "images/A/regular/image (29).jpg", "images/A/regular/image (30).jpg",
+            "images/A/regular/image (31).jpg", "images/A/regular/image (32).jpg", "images/A/regular/image (33).jpg",
+            "images/A/regular/image (34).jpg", "images/A/regular/image (35).jpg", "images/A/regular/image (36).jpg",
+            "images/A/regular/image (37).jpg", "images/A/regular/image (38).jpg", "images/A/regular/image (39).jpg",
+            "images/A/regular/image (40).jpg", "images/A/special/image (1).jpg", "images/A/special/image (2).jpg",
+            "images/A/special/image (3).jpg", "images/A/special/image (4).jpg", "images/A/special/image (5).jpg",
+            "images/A/special/image (6).jpg", "images/A/special/image (7).jpg", "images/A/special/image (8).jpg",
+            "images/A/special/image (9).jpg", "images/A/special/image (10).jpg", "images/B/regular/image (1).jpg",
+            "images/B/regular/image (2).jpg", "images/B/regular/image (3).jpg", "images/B/regular/image (4).jpg",
+            "images/B/regular/image (5).jpg", "images/B/regular/image (6).jpg", "images/B/regular/image (7).jpg",
+            "images/B/regular/image (8).jpg", "images/B/regular/image (9).jpg", "images/B/regular/image (10).jpg",
+            "images/B/regular/image (11).jpg", "images/B/regular/image (12).jpg", "images/B/regular/image (13).jpg",
+            "images/B/regular/image (14).jpg", "images/B/regular/image (15).jpg", "images/B/regular/image (16).jpg",
+            "images/B/regular/image (17).jpg", "images/B/regular/image (18).jpg", "images/B/regular/image (19).jpg",
+            "images/B/regular/image (20).jpg", "images/B/regular/image (21).jpg", "images/B/regular/image (22).jpg",
+            "images/B/regular/image (23).jpg", "images/B/regular/image (24).jpg", "images/B/regular/image (25).jpg",
+            "images/B/regular/image (26).jpg", "images/B/regular/image (27).jpg", "images/B/regular/image (28).jpg",
+            "images/B/regular/image (29).jpg", "images/B/regular/image (30).jpg", "images/B/regular/image (31).jpg",
+            "images/B/regular/image (32).jpg", "images/B/regular/image (33).jpg", "images/B/regular/image (34).jpg",
+            "images/B/regular/image (35).jpg", "images/B/regular/image (36).jpg", "images/B/regular/image (37).jpg",
+            "images/B/regular/image (38).jpg", "images/B/regular/image (39).jpg", "images/B/regular/image (40).jpg",
+            "images/B/special/image (1).jpg", "images/B/special/image (2).jpg", "images/B/special/image (3).jpg",
+            "images/B/special/image (4).jpg", "images/B/special/image (5).jpg", "images/B/special/image (6).jpg",
+            "images/B/special/image (7).jpg", "images/B/special/image (8).jpg", "images/B/special/image (9).jpg",
+            "images/B/special/image (10).jpg"
+        ];
+        
         let shownImages = [];
         let currentImage = null;
         let startTime = null;
@@ -67,6 +94,27 @@
         let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
         let timerInterval;
         let specialCount = 0;
+        let shuffledImages = [];
+
+        function shuffleImages() {
+            do {
+                shuffledImages = images.slice();
+                for (let i = shuffledImages.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffledImages[i], shuffledImages[j]] = [shuffledImages[j], shuffledImages[i]];
+                }
+            } while (!isShuffleValid(shuffledImages));
+        }
+
+        function isShuffleValid(shuffled) {
+            for (let i = 0; i < 20; i++) {
+                const segment = shuffled.slice(i * 5, (i + 1) * 5);
+                if (!segment.some(img => img.includes('special'))) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         function showImage(image) {
             const imgElement = document.getElementById('testImage');
@@ -92,33 +140,13 @@
                 return;
             }
 
-            let isSpecial = false;
-            let group = Math.random() < 0.5 ? 'A' : 'B';
-            let imageList;
-
-            if (specialCount < Math.floor(shownImages.length / 5)) {
-                isSpecial = true;
-                specialCount++;
-                imageList = images[group].special;
-            } else {
-                imageList = images[group].regular;
-            }
-
-            if (imageList.length === 0) {
-                group = group === 'A' ? 'B' : 'A';
-                imageList = isSpecial ? images[group].special : images[group].regular;
-            }
-
-            do {
-                currentImage = imageList.splice(Math.floor(Math.random() * imageList.length), 1)[0];
-            } while (shownImages.includes(currentImage));
-
+            currentImage = shuffledImages[shownImages.length];
             shownImages.push(currentImage);
 
             showImage(currentImage);
             timerInterval = setInterval(updateTimer, 1000);
 
-            if (isSpecial) {
+            if (currentImage.includes('special')) {
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
                 sessionStorage.setItem('totalTime', totalTime);
@@ -149,6 +177,12 @@
         }
 
         window.onload = function() {
+            if (!sessionStorage.getItem('shuffledImages')) {
+                shuffleImages();
+                sessionStorage.setItem('shuffledImages', JSON.stringify(shuffledImages));
+            } else {
+                shuffledImages = JSON.parse(sessionStorage.getItem('shuffledImages'));
+            }
             if (sessionStorage.getItem('currentImage')) {
                 currentImage = sessionStorage.getItem('currentImage');
                 shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
