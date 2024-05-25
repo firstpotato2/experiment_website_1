@@ -124,6 +124,12 @@
             sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
             window.location.href = 'test.html';
         }
+
+        window.onload = function() {
+            setTimeout(() => {
+                selectOption(null);  // 自動進入下一張圖片
+            }, 5000);  // 延遲 5 秒以回答問題
+        };
     </script>
 </body>
 </html>

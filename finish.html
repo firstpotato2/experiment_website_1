@@ -32,30 +32,23 @@
             let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
             let totalTime = JSON.parse(sessionStorage.getItem('totalTime'));
             let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers'));
-            let accuracy = sessionStorage.getItem('accuracy');
-            let csvFilename = "experiment_results.csv"; // 這裡設定了 CSV 的檔案名稱
-
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Image,Time(ms)\n";
-            for (let group in shownImages) {
-                shownImages[group].forEach(image => {
-                    csvContent += `${image},${totalTime[group]}\n`;
-                });
-            }
-            csvContent += "\nUser Answers,Accuracy\n";
+            shownImages.forEach((image, index) => {
+                csvContent += `${image},${totalTime[index]}\n`;
+            });
+            csvContent += "\nUser Answers\n";
             userAnswers.forEach((ans, idx) => {
                 csvContent += `${ans}\n`;
             });
-            csvContent += `,${accuracy}%\n`;
 
             let encodedUri = encodeURI(csvContent);
             let link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", csvFilename);
+            link.setAttribute("download", "experiment_results.csv");
             document.body.appendChild(link);
             link.click();
         }
     </script>
 </body>
 </html>
-
