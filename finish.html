@@ -33,6 +33,7 @@
             let totalTime = JSON.parse(sessionStorage.getItem('totalTime'));
             let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers'));
             let accuracy = sessionStorage.getItem('accuracy');
+            let csvFilename = sessionStorage.getItem('csvFilename');
 
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Image,Time(ms)\n";
@@ -50,11 +51,10 @@
             let encodedUri = encodeURI(csvContent);
             let link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "test_records.csv");
+            link.setAttribute("download", csvFilename);
             document.body.appendChild(link);
             link.click();
         }
     </script>
 </body>
 </html>
-

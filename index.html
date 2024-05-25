@@ -27,9 +27,30 @@
                 <input type="radio" id="other" name="gender" value="other" required>
                 <label for="other">其他</label><br><br>
                 <label for="age">年齡：</label>
-                <input type="number" id="age" name="age" required><br><br>
+                <input type="number" id="age" name="age" min="10" max="80" required><br><br>
                 <label for="profession">專業：</label>
-                <input type="text" id="profession" name="profession" required><br><br>
+                <select id="profession" name="profession" required>
+                    <option value="機械群">機械群</option>
+                    <option value="動力機械群">動力機械群</option>
+                    <option value="電機與電子群電機類">電機與電子群電機類</option>
+                    <option value="電機與電子群資電類">電機與電子群資電類</option>
+                    <option value="化工群">化工群</option>
+                    <option value="土木與建築群">土木與建築群</option>
+                    <option value="設計群">設計群</option>
+                    <option value="工程與管理類">工程與管理類</option>
+                    <option value="商業與管理群">商業與管理群</option>
+                    <option value="衛生與護理類">衛生與護理類</option>
+                    <option value="食品群">食品群</option>
+                    <option value="家政群幼保類">家政群幼保類</option>
+                    <option value="家政群生活應用類">家政群生活應用類</option>
+                    <option value="農業群">農業群</option>
+                    <option value="外語群英語類">外語群英語類</option>
+                    <option value="外語群日語類">外語群日語類</option>
+                    <option value="餐旅群">餐旅群</option>
+                    <option value="海事群">海事群</option>
+                    <option value="水產群">水產群</option>
+                    <option value="藝術群影視類">藝術群影視類</option>
+                </select><br><br>
                 <input type="submit" value="開始測驗">
             </fieldset>
         </form>
@@ -42,10 +63,17 @@
             const form = document.getElementById('surveyForm');
             if (form.checkValidity()) {
                 // Save user information in sessionStorage
-                sessionStorage.setItem('gender', document.querySelector('input[name="gender"]:checked').value);
-                sessionStorage.setItem('age', document.getElementById('age').value);
-                sessionStorage.setItem('profession', document.getElementById('profession').value);
+                const gender = document.querySelector('input[name="gender"]:checked').value;
+                const age = document.getElementById('age').value;
+                const profession = document.getElementById('profession').value;
+
+                sessionStorage.setItem('gender', gender);
+                sessionStorage.setItem('age', age);
+                sessionStorage.setItem('profession', profession);
                 
+                // Set CSV filename
+                sessionStorage.setItem('csvFilename', `${gender}_${age}歲_${profession}.csv`);
+
                 // Redirect to the test page
                 window.location.href = 'test.html';
             } else {
@@ -65,4 +93,4 @@
         })();
     </script>
 </body>
-</html> 
+</html>

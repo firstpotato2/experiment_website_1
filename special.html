@@ -33,43 +33,56 @@
     <div class="question-container">
         <h1 id="questionText"></h1>
         <div class="options">
-            <button onclick="selectOption(1)">選項 1</button>
-            <button onclick="selectOption(2)">選項 2</button>
-            <button onclick="selectOption(3)">選項 3</button>
-            <button onclick="selectOption(4)">選項 4</button>
+            <button onclick="selectOption('A')">選項 A</button>
+            <button onclick="selectOption('B')">選項 B</button>
+            <button onclick="selectOption('C')">選項 C</button>
+            <button onclick="selectOption('D')">選項 D</button>
         </div>
     </div>
 
     <script>
-        let questions = [...Array(20).keys()].map(i => `Question ${i+1}`);
-        let currentQuestion = null;
-        let userAnswers = [];
-        let correctAnswers = [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4]; // Example correct answers
+        const questions = {
+            A: [
+                "圖片裡的男子上衣為什麼顏色？",
+                "下列哪一個描述符合上一張風景照片？",
+                "圖片裡的雲是什麼顏色的？",
+                "盤子裡的馬卡龍大部分是什麼顏色的？",
+                "圖片裡沒有出現下列哪個顏色？",
+                "前一張圖片是彩色的還是黑白的？",
+                "地呱球是什麼顏色的？",
+                "前一張圖片裡的男士有沒有塗口紅？",
+                "刺蝟手上拿的吉他是什麼顏色的？",
+                "貓漢堡的麵包是什麼顏色的？"
+            ],
+            B: [
+                "你覺得圖片裡是一天中的什麼時間？",
+                "圖片中的女人有沒有看鏡頭？",
+                "圖片裡有幾個蛋糕？",
+                "前一張圖片裡的食物是什麼？",
+                "請問那是鴿子嗎？",
+                "前一張圖片的狼在做什麼？",
+                "前面兩隻雞的嘴巴是開著的嗎？",
+                "圖片裡的動物在你的認知中應該是什麼顏色的？",
+                "圖片裡有幾隻貓？",
+                "前面的兩隻浣熊騎著什麼？"
+            ]
+        };
+        const answers = {
+            A: ['B', 'D', 'B', 'D', 'A', 'A', 'D', 'A', 'C', 'D'],
+            B: ['C', 'C', 'B', 'A', 'B', 'D', 'C', 'B', 'D', 'D']
+        };
+        let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
+        let currentGroup = sessionStorage.getItem('currentGroup');
+        let currentImage = sessionStorage.getItem('currentImage');
+        let questionIndex = parseInt(currentImage.match(/\((\d+)\)/)[1]) - 1;
+        let questionText = questions[currentGroup][questionIndex];
 
-        function loadQuestion() {
-            if (questions.length === 0) {
-                finishSpecial();
-                return;
-            }
-            currentQuestion = questions.shift();
-            document.getElementById('questionText').innerText = currentQuestion;
-        }
+        document.getElementById('questionText').innerText = questionText;
 
         function selectOption(option) {
             userAnswers.push(option);
-            loadQuestion();
-        }
-
-        function finishSpecial() {
-            let correctCount = userAnswers.reduce((acc, ans, idx) => acc + (ans === correctAnswers[idx] ? 1 : 0), 0);
-            let accuracy = (correctCount / correctAnswers.length) * 100;
             sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
-            sessionStorage.setItem('accuracy', accuracy);
             window.location.href = 'test.html';
-        }
-
-        window.onload = function() {
-            loadQuestion();
         }
     </script>
 </body>

@@ -43,21 +43,22 @@
     <script>
         let images = {
             A: {
-                regular: [...Array(40).keys()].map(i => `images/A/regular/image (${i+1}).jpg`),
-                special: [...Array(10).keys()].map(i => `images/A/special/image (${i+1}).jpg`)
+                regular: [...Array(40).keys()].map(i => `images/A/regular/image(${i+1}).jpg`),
+                special: [...Array(10).keys()].map(i => `images/A/special/image(${i+1}).jpg`)
             },
             B: {
-                regular: [...Array(40).keys()].map(i => `images/B/regular/image (${i+1}).jpg`),
-                special: [...Array(10).keys()].map(i => `images/B/special/image (${i+1}).jpg`)
+                regular: [...Array(40).keys()].map(i => `images/B/regular/image(${i+1}).jpg`),
+                special: [...Array(10).keys()].map(i => `images/B/special/image(${i+1}).jpg`)
             }
         };
         let shownImages = { A: [], B: [] };
+        let allShownImages = [];
         let currentGroup = 'A';
         let currentImage = null;
         let startTime = null;
         let totalTime = { A: 0, B: 0 };
-        let specialQuestions = [...Array(20).keys()].map(i => `Question ${i+1}`);
-        
+        let userAnswers = [];
+
         function showImage(image) {
             const imgElement = document.getElementById('testImage');
             imgElement.src = image;
@@ -65,18 +66,26 @@
         }
 
         function nextImage() {
-            if (images[currentGroup].regular.length === 0 && images[currentGroup].special.length === 0) {
-                currentGroup = currentGroup === 'A' ? 'B' : 'A';
-                if (images[currentGroup].regular.length === 0 && images[currentGroup].special.length === 0) {
-                    finishTest();
-                    return;
-                }
+            if (allShownImages.length === 100) {
+                finishTest();
+                return;
             }
+
             let imageList = Math.random() < 0.2 ? images[currentGroup].special : images[currentGroup].regular;
-            if (imageList.length === 0) imageList = images[currentGroup].regular;
+            while (imageList.length === 0 || allShownImages.includes(imageList[0])) {
+                imageList = images[currentGroup].regular.length > 0 ? images[currentGroup].regular : images[currentGroup].special;
+            }
+
             currentImage = imageList.splice(Math.floor(Math.random() * imageList.length), 1)[0];
             shownImages[currentGroup].push(currentImage);
-            showImage(currentImage);
+            allShownImages.push(currentImage);
+
+            if (currentImage.includes('special')) {
+                sessionStorage.setItem('currentImage', currentImage);
+                window.location.href = 'special.html';
+            } else {
+                showImage(currentImage);
+            }
         }
 
         function pauseTest() {
@@ -86,6 +95,7 @@
                 sessionStorage.setItem('currentGroup', currentGroup);
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+                sessionStorage.setItem('allShownImages', JSON.stringify(allShownImages));
                 sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
                 window.location.href = 'pause.html';
             }
@@ -94,6 +104,7 @@
         function finishTest() {
             sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
             sessionStorage.setItem('totalTime', JSON.stringify(totalTime));
+            sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
             window.location.href = 'finish.html';
         }
 
@@ -102,6 +113,7 @@
                 currentGroup = sessionStorage.getItem('currentGroup');
                 currentImage = sessionStorage.getItem('currentImage');
                 shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
+                allShownImages = JSON.parse(sessionStorage.getItem('allShownImages'));
                 totalTime = JSON.parse(sessionStorage.getItem('totalTime'));
                 showImage(currentImage);
             } else {
