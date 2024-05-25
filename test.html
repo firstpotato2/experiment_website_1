@@ -86,7 +86,7 @@
             "images/B/special/image (7).jpg", "images/B/special/image (8).jpg", "images/B/special/image (9).jpg",
             "images/B/special/image (10).jpg"
         ];
-
+        
         let shownImages = [];
         let currentImage = null;
         let startTime = null;
@@ -149,9 +149,7 @@
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
                 sessionStorage.setItem('totalTime', totalTime);
-                setTimeout(() => {
-                    window.location.href = 'special.html';
-                }, 2000);  // 延遲 2 秒以顯示特殊圖片
+                window.location.href = 'special.html';
             }
         }
 

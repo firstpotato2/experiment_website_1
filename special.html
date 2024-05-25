@@ -126,10 +126,20 @@
         }
 
         window.onload = function() {
-            setTimeout(() => {
-                selectOption(null);  // 自動進入下一張圖片
-            }, 5000);  // 延遲 5 秒以回答問題
+            showImage(currentImage);
         };
+
+        function showImage(image) {
+            const imgElement = document.createElement('img');
+            imgElement.src = image;
+            imgElement.style.maxWidth = '100%';
+            imgElement.style.maxHeight = '100%';
+            document.body.insertBefore(imgElement, document.body.firstChild);
+
+            setTimeout(() => {
+                document.body.removeChild(imgElement);
+            }, 2000);  // 显示图片 2 秒钟后移除
+        }
     </script>
 </body>
 </html>
