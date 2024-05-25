@@ -95,7 +95,6 @@
         let timerInterval;
         let shuffledImages = [];
         let lastImageWasSpecial = false;
-        let pauseTime = 0;
 
         function shuffleImages() {
             do {
@@ -108,14 +107,14 @@
         }
 
         function isShuffleValid(shuffled) {
-            for (let i = 0; i < 20; i++) {
-                const segment = shuffled.slice(i * 5, (i + 1) * 5);
-                if (!segment.some(img => img.includes('special'))) {
+            for (let i = 0; i < shuffled.length - 1; i++) {
+                if (shuffled[i].includes('special') && shuffled[i + 1].includes('special')) {
                     return false;
                 }
             }
-            for (let i = 0; i < shuffled.length - 1; i++) {
-                if (shuffled[i].includes('special') && shuffled[i + 1].includes('special')) {
+            for (let i = 0; i < 20; i++) {
+                const segment = shuffled.slice(i * 5, (i + 1) * 5);
+                if (!segment.some(img => img.includes('special'))) {
                     return false;
                 }
             }
@@ -132,7 +131,7 @@
             const timer = document.getElementById('timer');
             setInterval(() => {
                 const now = Date.now();
-                const elapsed = Math.floor((now - startTime + pauseTime) / 1000);
+                const elapsed = Math.floor((now - startTime) / 1000);
                 const minutes = Math.floor(elapsed / 60);
                 const seconds = elapsed % 60;
                 timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -169,11 +168,9 @@
                 clearInterval(timerInterval);
                 let timeSpent = Date.now() - startTime;
                 totalTime += timeSpent;
-                pauseTime += timeSpent;
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
                 sessionStorage.setItem('totalTime', totalTime);
-                sessionStorage.setItem('pauseTime', pauseTime);
                 window.location.href = 'pause.html';
             }
         }
@@ -199,7 +196,6 @@
                 currentImage = sessionStorage.getItem('currentImage');
                 shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
                 totalTime = parseInt(sessionStorage.getItem('totalTime'), 10);
-                pauseTime = parseInt(sessionStorage.getItem('pauseTime'), 10) || 0;
                 showImage(currentImage);
             } else {
                 nextImage();
