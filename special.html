@@ -35,6 +35,15 @@
     <div class="fullscreen-img">
         <img id="specialImage" src="" alt="Special Image" style="max-width: 100%; max-height: 100%;">
     </div>
+    <div class="question-container" style="display: none;">
+        <h1 id="questionText"></h1>
+        <div class="options">
+            <button id="optionA" onclick="selectOption('A')"></button>
+            <button id="optionB" onclick="selectOption('B')"></button>
+            <button id="optionC" onclick="selectOption('C')"></button>
+            <button id="optionD" onclick="selectOption('D')"></button>
+        </div>
+    </div>
     <div class="controls">
         <button onclick="pauseTest()">暫停</button>
         <button onclick="nextImage()">下一張圖片</button>
@@ -85,60 +94,23 @@
             "images/B/special/image (9).jpg": ["(A) 4", "(B) 8", "(C) 6", "(D) 5"],
             "images/B/special/image (10).jpg": ["(A) 汽車", "(B) 腳踏車", "(C) 浣熊", "(D) 摩托車"]
         };
-        const answers = {
-            "images/A/special/image (1).jpg": 'B',
-            "images/A/special/image (2).jpg": 'D',
-            "images/A/special/image (3).jpg": 'B',
-            "images/A/special/image (4).jpg": 'D',
-            "images/A/special/image (5).jpg": 'A',
-            "images/A/special/image (6).jpg": 'A',
-            "images/A/special/image (7).jpg": 'D',
-            "images/A/special/image (8).jpg": 'A',
-            "images/A/special/image (9).jpg": 'C',
-            "images/A/special/image (10).jpg": 'D',
-            "images/B/special/image (1).jpg": 'C',
-            "images/B/special/image (2).jpg": 'C',
-            "images/B/special/image (3).jpg": 'B',
-            "images/B/special/image (4).jpg": 'A',
-            "images/B/special/image (5).jpg": 'B',
-            "images/B/special/image (6).jpg": 'D',
-            "images/B/special/image (7).jpg": 'C',
-            "images/B/special/image (8).jpg": 'B',
-            "images/B/special/image (9).jpg": 'D',
-            "images/B/special/image (10).jpg": 'D'
-        };
+
         let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
         let currentImage = sessionStorage.getItem('currentImage');
         let questionText = questions[currentImage];
         let optionText = options[currentImage];
 
         document.getElementById('specialImage').src = currentImage;
+        document.getElementById('questionText').innerText = questionText;
+        document.getElementById('optionA').innerText = optionText[0];
+        document.getElementById('optionB').innerText = optionText[1];
+        document.getElementById('optionC').innerText = optionText[2];
+        document.getElementById('optionD').innerText = optionText[3];
 
         function selectOption(option) {
             userAnswers.push(option);
             sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
-            nextImage();
-        }
-
-        function nextImage() {
-            let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
-            let totalTime = parseInt(sessionStorage.getItem('totalTime'), 10);
-            if (shownImages.length === 100) {
-                finishTest();
-                return;
-            }
-
-            let currentImage = shownImages[shownImages.length - 1];
-            shownImages.push(currentImage);
-            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
-            showImage(currentImage);
-            timerInterval = setInterval(updateTimer, 1000);
-        }
-
-        function showImage(image) {
-            const imgElement = document.getElementById('specialImage');
-            imgElement.src = image;
-            startTime = Date.now();
+            window.location.href = 'test.html';
         }
 
         function pauseTest() {
@@ -154,19 +126,15 @@
             window.location.href = 'pause.html';
         }
 
-        function finishTest() {
-            clearInterval(timerInterval);
-            let timeSpent = Date.now() - startTime;
-            totalTime += timeSpent;
-            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
-            sessionStorage.setItem('totalTime', totalTime);
-            sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
-            window.location.href = 'finish.html';
-        }
-
         window.onload = function() {
-            showImage(currentImage);
+            document.querySelector('.fullscreen-img').style.display = 'block';
+            document.querySelector('.question-container').style.display = 'none';
         };
+
+        function nextImage() {
+            document.querySelector('.fullscreen-img').style.display = 'none';
+            document.querySelector('.question-container').style.display = 'block';
+        }
     </script>
 </body>
 </html>
