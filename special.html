@@ -28,10 +28,20 @@
             padding: 10px 20px;
             font-size: 16px;
         }
+        .fullscreen-img {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background-color: black;
+        }
     </style>
 </head>
 <body>
-    <div class="question-container">
+    <div class="fullscreen-img">
+        <img id="specialImage" src="" alt="Special Image" style="max-width: 100%; max-height: 100%;">
+    </div>
+    <div class="question-container" style="display: none;">
         <h1 id="questionText"></h1>
         <div class="options">
             <button id="optionA" onclick="selectOption('A')">選項 A</button>
@@ -39,6 +49,9 @@
             <button id="optionC" onclick="selectOption('C')">選項 C</button>
             <button id="optionD" onclick="selectOption('D')">選項 D</button>
         </div>
+    </div>
+    <div class="controls">
+        <button onclick="showQuestion()">顯示問題</button>
     </div>
 
     <script>
@@ -113,6 +126,7 @@
         let questionText = questions[currentImage];
         let optionText = options[currentImage];
 
+        document.getElementById('specialImage').src = currentImage;
         document.getElementById('questionText').innerText = questionText;
         document.getElementById('optionA').innerText = optionText[0];
         document.getElementById('optionB').innerText = optionText[1];
@@ -125,20 +139,9 @@
             window.location.href = 'test.html';
         }
 
-        window.onload = function() {
-            showImage(currentImage);
-        };
-
-        function showImage(image) {
-            const imgElement = document.createElement('img');
-            imgElement.src = image;
-            imgElement.style.maxWidth = '100%';
-            imgElement.style.maxHeight = '100%';
-            document.body.insertBefore(imgElement, document.body.firstChild);
-
-            setTimeout(() => {
-                document.body.removeChild(imgElement);
-            }, 2000);  // 显示图片 2 秒钟后移除
+        function showQuestion() {
+            document.querySelector('.fullscreen-img').style.display = 'none';
+            document.querySelector('.question-container').style.display = 'block';
         }
     </script>
 </body>
