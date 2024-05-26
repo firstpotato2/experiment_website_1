@@ -37,6 +37,13 @@
             color: white;
             font-size: 24px;
         }
+        .counter {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: white;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
@@ -48,6 +55,7 @@
         <button onclick="pauseTest()">暫停</button>
         <button onclick="nextImage()">下一張圖片</button>
     </div>
+    <div class="counter" id="counter">已顯示: 0 張</div>
 
     <script>
         let images = [
@@ -138,6 +146,11 @@
             }, 1000);
         }
 
+        function updateCounter() {
+            const counter = document.getElementById('counter');
+            counter.textContent = `已顯示: ${shownImages.length} 張`;
+        }
+
         function nextImage() {
             clearInterval(timerInterval);
             if (shownImages.length === 100) {
@@ -147,6 +160,7 @@
 
             currentImage = shuffledImages[shownImages.length];
             shownImages.push({ image: currentImage, time: Date.now() - startTime });
+            updateCounter();
 
             if (currentImage.includes('special')) {
                 lastImageWasSpecial = true;
@@ -200,6 +214,7 @@
             } else {
                 nextImage();
             }
+            updateCounter();
             timerInterval = setInterval(updateTimer, 1000);
         };
 
@@ -211,3 +226,4 @@
     </script>
 </body>
 </html>
+
