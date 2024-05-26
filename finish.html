@@ -55,23 +55,24 @@
             let accuracy = (correctCount / Object.keys(correctAnswers).length) * 100;
 
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Image,Time(ms),Group\n";
+            csvContent += "Image,Time(Seconds),Group\n";
             shownImages.forEach((entry) => {
                 if (entry && entry.image) {
                     let group = entry.image.includes('A') ? 'A' : 'B';
-                    csvContent += `${entry.image},${entry.time},${group}\n`;
+                    let timeInSeconds = (entry.time / 1000).toFixed(2);
+                    csvContent += `${entry.image},${timeInSeconds},${group}\n`;
                 }
             });
 
             let totalTimeA = shownImages.reduce((acc, val) => val.image ? (val.image.includes('A') ? acc + val.time : acc) : acc, 0);
             let totalTimeB = shownImages.reduce((acc, val) => val.image ? (val.image.includes('B') ? acc + val.time : acc) : acc, 0);
-            csvContent += `\nTotal Time A (ms),${totalTimeA}\n`;
-            csvContent += `Total Time B (ms),${totalTimeB}\n`;
+            csvContent += `\nTotal Time A (Seconds),${(totalTimeA / 1000).toFixed(2)}\n`;
+            csvContent += `Total Time B (Seconds),${(totalTimeB / 1000).toFixed(2)}\n`;
             csvContent += "\nCorrect Answers,User Answers\n";
             Object.keys(correctAnswers).forEach((key, index) => {
                 csvContent += `${key},${correctAnswers[key]},${userAnswers[key] || ''}\n`;
             });
-            csvContent += `\nAccuracy,${accuracy}%\n`;
+            csvContent += `\nAccuracy,${accuracy.toFixed(2)}%\n`;
 
             let encodedUri = encodeURI(csvContent);
             let link = document.createElement("a");
@@ -83,4 +84,3 @@
     </script>
 </body>
 </html>
-
