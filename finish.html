@@ -36,38 +36,26 @@
             let csvFilename = sessionStorage.getItem('csvFilename');
 
             let correctAnswers = {
-                "images/A/special/image (1).jpg": "B",
-                "images/A/special/image (2).jpg": "D",
-                "images/A/special/image (3).jpg": "B",
-                "images/A/special/image (4).jpg": "D",
-                "images/A/special/image (5).jpg": "A",
-                "images/A/special/image (6).jpg": "A",
-                "images/A/special/image (7).jpg": "D",
-                "images/A/special/image (8).jpg": "A",
-                "images/A/special/image (9).jpg": "C",
-                "images/A/special/image (10).jpg": "D",
-                "images/B/special/image (1).jpg": "C",
-                "images/B/special/image (2).jpg": "C",
-                "images/B/special/image (3).jpg": "B",
-                "images/B/special/image (4).jpg": "A",
-                "images/B/special/image (5).jpg": "B",
-                "images/B/special/image (6).jpg": "D",
-                "images/B/special/image (7).jpg": "C",
-                "images/B/special/image (8).jpg": "B",
-                "images/B/special/image (9).jpg": "D",
-                "images/B/special/image (10).jpg": "D"
+                "images/A/special/image (1).jpg": "B", "images/A/special/image (2).jpg": "D", "images/A/special/image (3).jpg": "B",
+                "images/A/special/image (4).jpg": "D", "images/A/special/image (5).jpg": "A", "images/A/special/image (6).jpg": "A",
+                "images/A/special/image (7).jpg": "D", "images/A/special/image (8).jpg": "A", "images/A/special/image (9).jpg": "C",
+                "images/A/special/image (10).jpg": "D", "images/B/special/image (1).jpg": "C", "images/B/special/image (2).jpg": "C",
+                "images/B/special/image (3).jpg": "B", "images/B/special/image (4).jpg": "A", "images/B/special/image (5).jpg": "B",
+                "images/B/special/image (6).jpg": "D", "images/B/special/image (7).jpg": "C", "images/B/special/image (8).jpg": "B",
+                "images/B/special/image (9).jpg": "D", "images/B/special/image (10).jpg": "D"
             };
 
-            let correctCount = userAnswers.reduce((acc, answer, index) => {
-                if (correctAnswers[shownImages[index].image] === answer) {
+            let correctCount = Object.keys(correctAnswers).reduce((acc, key) => {
+                if (correctAnswers[key] === userAnswers[key]) {
                     acc++;
                 }
                 return acc;
             }, 0);
-            let accuracy = (correctCount / userAnswers.length) * 100;
+
+            let accuracy = (correctCount / Object.keys(correctAnswers).length) * 100;
 
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Image,Time(s),Group\n";
+            csvContent += "Image,Time(Seconds),Group\n";
             shownImages.forEach((entry) => {
                 if (entry && entry.image) {
                     let group = entry.image.includes('A') ? 'A' : 'B';
@@ -78,11 +66,11 @@
 
             let totalTimeA = shownImages.reduce((acc, val) => val.image ? (val.image.includes('A') ? acc + val.time : acc) : acc, 0);
             let totalTimeB = shownImages.reduce((acc, val) => val.image ? (val.image.includes('B') ? acc + val.time : acc) : acc, 0);
-            csvContent += `\nTotal Time A (s),${(totalTimeA / 1000).toFixed(2)}\n`;
-            csvContent += `Total Time B (s),${(totalTimeB / 1000).toFixed(2)}\n`;
+            csvContent += `\nTotal Time A (Seconds),${(totalTimeA / 1000).toFixed(2)}\n`;
+            csvContent += `Total Time B (Seconds),${(totalTimeB / 1000).toFixed(2)}\n`;
             csvContent += "\nCorrect Answers,User Answers\n";
             Object.keys(correctAnswers).forEach((key, index) => {
-                csvContent += `Question ${index + 1},${correctAnswers[key]},${userAnswers[index] || ''}\n`;
+                csvContent += `${key},${correctAnswers[key]},${userAnswers[key] || ''}\n`;
             });
             csvContent += `\nAccuracy,${accuracy.toFixed(2)}%\n`;
 
@@ -96,3 +84,4 @@
     </script>
 </body>
 </html>
+
