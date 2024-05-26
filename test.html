@@ -37,12 +37,12 @@
             color: white;
             font-size: 24px;
         }
-        .image-count {
+        .counter {
             position: absolute;
             bottom: 10px;
             right: 10px;
             color: white;
-            font-size: 16px;
+            font-size: 24px;
         }
     </style>
 </head>
@@ -55,22 +55,55 @@
         <button onclick="pauseTest()">暫停</button>
         <button onclick="nextImage()">下一張圖片</button>
     </div>
-    <div class="image-count" id="imageCount">0/100</div>
+    <div class="counter" id="counter">已顯示: 0 張</div>
 
     <script>
         let images = [
-            // Images array here
+            "images/A/regular/image (1).jpg", "images/A/regular/image (2).jpg", "images/A/regular/image (3).jpg",
+            "images/A/regular/image (4).jpg", "images/A/regular/image (5).jpg", "images/A/regular/image (6).jpg",
+            "images/A/regular/image (7).jpg", "images/A/regular/image (8).jpg", "images/A/regular/image (9).jpg",
+            "images/A/regular/image (10).jpg", "images/A/regular/image (11).jpg", "images/A/regular/image (12).jpg",
+            "images/A/regular/image (13).jpg", "images/A/regular/image (14).jpg", "images/A/regular/image (15).jpg",
+            "images/A/regular/image (16).jpg", "images/A/regular/image (17).jpg", "images/A/regular/image (18).jpg",
+            "images/A/regular/image (19).jpg", "images/A/regular/image (20).jpg", "images/A/regular/image (21).jpg",
+            "images/A/regular/image (22).jpg", "images/A/regular/image (23).jpg", "images/A/regular/image (24).jpg",
+            "images/A/regular/image (25).jpg", "images/A/regular/image (26).jpg", "images/A/regular/image (27).jpg",
+            "images/A/regular/image (28).jpg", "images/A/regular/image (29).jpg", "images/A/regular/image (30).jpg",
+            "images/A/regular/image (31).jpg", "images/A/regular/image (32).jpg", "images/A/regular/image (33).jpg",
+            "images/A/regular/image (34).jpg", "images/A/regular/image (35).jpg", "images/A/regular/image (36).jpg",
+            "images/A/regular/image (37).jpg", "images/A/regular/image (38).jpg", "images/A/regular/image (39).jpg",
+            "images/A/regular/image (40).jpg", "images/A/special/image (1).jpg", "images/A/special/image (2).jpg",
+            "images/A/special/image (3).jpg", "images/A/special/image (4).jpg", "images/A/special/image (5).jpg",
+            "images/A/special/image (6).jpg", "images/A/special/image (7).jpg", "images/A/special/image (8).jpg",
+            "images/A/special/image (9).jpg", "images/A/special/image (10).jpg", "images/B/regular/image (1).jpg",
+            "images/B/regular/image (2).jpg", "images/B/regular/image (3).jpg", "images/B/regular/image (4).jpg",
+            "images/B/regular/image (5).jpg", "images/B/regular/image (6).jpg", "images/B/regular/image (7).jpg",
+            "images/B/regular/image (8).jpg", "images/B/regular/image (9).jpg", "images/B/regular/image (10).jpg",
+            "images/B/regular/image (11).jpg", "images/B/regular/image (12).jpg", "images/B/regular/image (13).jpg",
+            "images/B/regular/image (14).jpg", "images/B/regular/image (15).jpg", "images/B/regular/image (16).jpg",
+            "images/B/regular/image (17).jpg", "images/B/regular/image (18).jpg", "images/B/regular/image (19).jpg",
+            "images/B/regular/image (20).jpg", "images/B/regular/image (21).jpg", "images/B/regular/image (22).jpg",
+            "images/B/regular/image (23).jpg", "images/B/regular/image (24).jpg", "images/B/regular/image (25).jpg",
+            "images/B/regular/image (26).jpg", "images/B/regular/image (27).jpg", "images/B/regular/image (28).jpg",
+            "images/B/regular/image (29).jpg", "images/B/regular/image (30).jpg", "images/B/regular/image (31).jpg",
+            "images/B/regular/image (32).jpg", "images/B/regular/image (33).jpg", "images/B/regular/image (34).jpg",
+            "images/B/regular/image (35).jpg", "images/B/regular/image (36).jpg", "images/B/regular/image (37).jpg",
+            "images/B/regular/image (38).jpg", "images/B/regular/image (39).jpg", "images/B/regular/image (40).jpg",
+            "images/B/special/image (1).jpg", "images/B/special/image (2).jpg", "images/B/special/image (3).jpg",
+            "images/B/special/image (4).jpg", "images/B/special/image (5).jpg", "images/B/special/image (6).jpg",
+            "images/B/special/image (7).jpg", "images/B/special/image (8).jpg", "images/B/special/image (9).jpg",
+            "images/B/special/image (10).jpg"
         ];
 
-        let shownImages = JSON.parse(sessionStorage.getItem('shownImages')) || [];
+        let shownImages = [];
         let currentImage = null;
         let startTime = null;
         let totalTime = 0;
         let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
         let timerInterval;
+        let pausedTime = parseInt(sessionStorage.getItem('pausedTime') || 0, 10);
         let shuffledImages = [];
         let lastImageWasSpecial = false;
-        let pausedTime = parseInt(sessionStorage.getItem('pausedTime') || 0, 10);
 
         function shuffleImages() {
             do {
@@ -101,16 +134,17 @@
             const imgElement = document.getElementById('testImage');
             imgElement.src = image;
             startTime = Date.now() - pausedTime;
-            timerInterval = setInterval(updateTimer, 1000);
         }
 
         function updateTimer() {
             const timer = document.getElementById('timer');
-            const now = Date.now();
-            const elapsed = Math.floor((now - startTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-            timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            setInterval(() => {
+                const now = Date.now();
+                const elapsed = Math.floor((now - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }, 1000);
         }
 
         function nextImage() {
@@ -120,21 +154,24 @@
                 return;
             }
 
-            let nextImageIndex = shownImages.length;
-            let shuffledImages = JSON.parse(sessionStorage.getItem('shuffledImages'));
-            let nextImage = shuffledImages[nextImageIndex];
-            shownImages.push({ image: currentImage, time: Date.now() - startTime });
-            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
-            sessionStorage.setItem('currentImage', nextImage);
-            sessionStorage.removeItem('pausedTime');
+            if (currentImage) {
+                shownImages.push({ image: currentImage, time: Date.now() - startTime });
+            }
 
-            if (nextImage.includes('special')) {
+            currentImage = shuffledImages[shownImages.length];
+
+            if (currentImage.includes('special')) {
                 lastImageWasSpecial = true;
+                sessionStorage.setItem('currentImage', currentImage);
+                sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+                sessionStorage.setItem('totalTime', totalTime);
                 window.location.href = 'special.html';
             } else {
-                lastImageWasSpecial = false;
-                showImage(nextImage);
-                document.getElementById('imageCount').textContent = `${shownImages.length}/100`;
+                if (lastImageWasSpecial) {
+                    lastImageWasSpecial = false;
+                }
+                showImage(currentImage);
+                updateCounter();
                 timerInterval = setInterval(updateTimer, 1000);
             }
         }
@@ -143,10 +180,33 @@
             if (currentImage) {
                 clearInterval(timerInterval);
                 let timeSpent = Date.now() - startTime;
+                totalTime += timeSpent;
+                sessionStorage.setItem('currentImage', currentImage);
+                sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+                sessionStorage.setItem('totalTime', totalTime);
                 sessionStorage.setItem('pausedTime', timeSpent);
                 window.location.href = 'pause.html';
             }
         }
+
+        function finishTest() {
+            clearInterval(timerInterval);
+            let timeSpent = Date.now() - startTime;
+            totalTime += timeSpent;
+            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+            sessionStorage.setItem('totalTime', totalTime);
+            sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
+            window.location.href = 'finish.html';
+        }
+
+        function updateCounter() {
+            const counter = document.getElementById('counter');
+            counter.textContent = `已顯示: ${shownImages.length} 張`;
+        }
+
+        document.getElementById('testImage').onload = function() {
+            updateCounter();
+        };
 
         window.onload = function() {
             if (!sessionStorage.getItem('shuffledImages')) {
@@ -163,9 +223,14 @@
             } else {
                 nextImage();
             }
-            document.getElementById('imageCount').textContent = `${shownImages.length}/100`;
             timerInterval = setInterval(updateTimer, 1000);
-        }
+        };
+
+        window.addEventListener('popstate', function(event) {
+            window.location.href = 'index.html';
+        });
+
+        history.pushState(null, null, window.location.href);
     </script>
 </body>
 </html>
