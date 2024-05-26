@@ -29,56 +29,57 @@
     <p>感謝您撥空參加本次實驗 d(`･∀･)b</p>
     <button onclick="downloadRecords()">下載紀錄</button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <script>
         function downloadRecords() {
             let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
             let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers'));
-            let userInfo = sessionStorage.getItem('userInfo');  // 假設基本資料已儲存在 sessionStorage 中
-            let userInfoForFilename = userInfo ? userInfo.replace(/ /g, '_') : '基本資料';
+            let csvFilename = sessionStorage.getItem('csvFilename');
 
             let correctAnswers = {
-                "images/A/special/image (1).jpg": "B",
-                "images/A/special/image (2).jpg": "D",
-                "images/A/special/image (3).jpg": "B",
-                "images/A/special/image (4).jpg": "D",
-                "images/A/special/image (5).jpg": "A",
-                "images/A/special/image (6).jpg": "A",
-                "images/A/special/image (7).jpg": "D",
-                "images/A/special/image (8).jpg": "A",
-                "images/A/special/image (9).jpg": "C",
-                "images/A/special/image (10).jpg": "D",
-                "images/B/special/image (1).jpg": "C",
-                "images/B/special/image (2).jpg": "C",
-                "images/B/special/image (3).jpg": "B",
-                "images/B/special/image (4).jpg": "A",
-                "images/B/special/image (5).jpg": "B",
-                "images/B/special/image (6).jpg": "D",
-                "images/B/special/image (7).jpg": "C",
-                "images/B/special/image (8).jpg": "B",
-                "images/B/special/image (9).jpg": "D",
-                "images/B/special/image (10).jpg": "D"
+                "images/A/special/image (1).jpg": "B", "images/A/special/image (2).jpg": "D", "images/A/special/image (3).jpg": "B",
+                "images/A/special/image (4).jpg": "D", "images/A/special/image (5).jpg": "A", "images/A/special/image (6).jpg": "A",
+                "images/A/special/image (7).jpg": "D", "images/A/special/image (8).jpg": "A", "images/A/special/image (9).jpg": "C",
+                "images/A/special/image (10).jpg": "D", "images/B/special/image (1).jpg": "C", "images/B/special/image (2).jpg": "C",
+                "images/B/special/image (3).jpg": "B", "images/B/special/image (4).jpg": "A", "images/B/special/image (5).jpg": "B",
+                "images/B/special/image (6).jpg": "D", "images/B/special/image (7).jpg": "C", "images/B/special/image (8).jpg": "B",
+                "images/B/special/image (9).jpg": "D", "images/B/special/image (10).jpg": "D"
             };
 
-            let data = shownImages.map((entry) => {
-                let image = entry.image;
-                let time = (entry.time / 1000).toFixed(2);
-                let group = image.includes('A') ? 'A' : 'B';
-                let userAnswer = userAnswers[image] || '';
-                let correctAnswer = correctAnswers[image] || '';
+            let correctCount = Object.keys(correctAnswers).reduce((acc, key) => {
+                if (correctAnswers[key] === userAnswers[key]) {
+                    acc++;
+                }
+                return acc;
+            }, 0);
 
-                return { image, time, group, userAnswer, correctAnswer };
+            let accuracy = (correctCount / Object.keys(correctAnswers).length) * 100;
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Image,Time(Seconds),Group\n";
+            shownImages.forEach((entry) => {
+                if (entry && entry.image) {
+                    let group = entry.image.includes('A') ? 'A' : 'B';
+                    let timeInSeconds = (entry.time / 1000).toFixed(2);
+                    csvContent += `${entry.image},${timeInSeconds},${group}\n`;
+                }
             });
 
-            // 创建 Excel 文件
-            let wb = XLSX.utils.book_new();
-            let ws = XLSX.utils.json_to_sheet(data);
+            let totalTimeA = shownImages.reduce((acc, val) => val.image ? (val.image.includes('A') ? acc + val.time : acc) : acc, 0);
+            let totalTimeB = shownImages.reduce((acc, val) => val.image ? (val.image.includes('B') ? acc + val.time : acc) : acc, 0);
+            csvContent += `\nTotal Time A (Seconds),${(totalTimeA / 1000).toFixed(2)}\n`;
+            csvContent += `Total Time B (Seconds),${(totalTimeB / 1000).toFixed(2)}\n`;
+            csvContent += "\nCorrect Answers,User Answers\n";
+            Object.keys(correctAnswers).forEach((key, index) => {
+                csvContent += `${key},${correctAnswers[key]},${userAnswers[key] || ''}\n`;
+            });
+            csvContent += `\nAccuracy,${accuracy.toFixed(2)}%\n`;
 
-            XLSX.utils.book_append_sheet(wb, ws, "基本資料");
-
-            // 生成文件并下载，文件名包含基本资料
-            let filename = `${userInfoForFilename}.xlsx`;
-            XLSX.writeFile(wb, filename);
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", csvFilename);
+            document.body.appendChild(link);
+            link.click();
         }
     </script>
 </body>
