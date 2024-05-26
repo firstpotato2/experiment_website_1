@@ -203,6 +203,10 @@
             window.location.href = 'finish.html';
         }
 
+        document.getElementById('testImage').onload = function() {
+            updateCounter();
+        };
+
         window.onload = function() {
             if (!sessionStorage.getItem('shuffledImages')) {
                 shuffleImages();
@@ -229,4 +233,3 @@
     </script>
 </body>
 </html>
-
