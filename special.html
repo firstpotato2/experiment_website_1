@@ -55,20 +55,20 @@
     <script>
         let currentImage = sessionStorage.getItem('currentImage');
         let startTime = null;
+        let totalTime = parseInt(sessionStorage.getItem('totalTime'), 10) || 0;
         let timerInterval;
-        let pausedTime = parseInt(sessionStorage.getItem('pausedTime') || 0, 10);
 
         function showImage(image) {
             const imgElement = document.getElementById('specialImage');
             imgElement.src = image;
-            startTime = Date.now() - pausedTime;
+            startTime = Date.now();
             timerInterval = setInterval(updateTimer, 1000);
         }
 
         function updateTimer() {
             const timer = document.getElementById('timer');
             const now = Date.now();
-            const elapsed = Math.floor((now - startTime) / 1000);
+            const elapsed = Math.floor((now - startTime + totalTime) / 1000);
             const minutes = Math.floor(elapsed / 60);
             const seconds = elapsed % 60;
             timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -80,17 +80,18 @@
             let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
             shownImages.push({ image: currentImage, time: timeSpent });
             sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
-            sessionStorage.removeItem('pausedTime');
+            sessionStorage.setItem('totalTime', 0); // Reset total time for next image
             window.location.href = 'question.html';
         }
 
         function pauseTest() {
-            if (currentImage) {
-                clearInterval(timerInterval);
-                let timeSpent = Date.now() - startTime;
-                sessionStorage.setItem('pausedTime', timeSpent);
-                window.location.href = 'pause.html';
-            }
+            clearInterval(timerInterval);
+            let timeSpent = Date.now() - startTime;
+            totalTime += timeSpent;
+            sessionStorage.setItem('currentImage', currentImage);
+            sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
+            sessionStorage.setItem('totalTime', totalTime);
+            window.location.href = 'pause.html';
         }
 
         window.onload = function() {
@@ -99,4 +100,3 @@
     </script>
 </body>
 </html>
-
