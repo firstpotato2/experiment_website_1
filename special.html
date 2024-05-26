@@ -81,14 +81,17 @@
             shownImages.push({ image: currentImage, time: timeSpent });
             sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
             sessionStorage.removeItem('pausedTime');
+            sessionStorage.setItem('comingFromSpecial', 'true');
             window.location.href = 'question.html';
         }
 
         function pauseTest() {
-            clearInterval(timerInterval);
-            let timeSpent = Date.now() - startTime;
-            sessionStorage.setItem('pausedTime', timeSpent);
-            window.location.href = 'pause.html';
+            if (currentImage) {
+                clearInterval(timerInterval);
+                let timeSpent = Date.now() - startTime;
+                sessionStorage.setItem('pausedTime', timeSpent);
+                window.location.href = 'pause.html';
+            }
         }
 
         window.onload = function() {

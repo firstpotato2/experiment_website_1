@@ -116,7 +116,8 @@
             "images/B/special/image (10).jpg": ["(A) 汽車", "(B) 腳踏車", "(C) 浣熊", "(D) 摩托車"]
         };
 
-        let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || {};
+        let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
+        let shownImages = JSON.parse(sessionStorage.getItem('shownImages')) || [];
         let currentImage = sessionStorage.getItem('currentImage');
         let questionText = questions[currentImage];
         let optionText = options[currentImage];
@@ -130,9 +131,9 @@
         function submitAnswer() {
             const selectedOption = document.querySelector('input[name="answer"]:checked');
             if (selectedOption) {
-                userAnswers[currentImage] = selectedOption.value;
+                userAnswers.push(selectedOption.value);
                 sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
-                let nextImageIndex = JSON.parse(sessionStorage.getItem('shownImages')).length;
+                let nextImageIndex = shownImages.length;
                 let shuffledImages = JSON.parse(sessionStorage.getItem('shuffledImages'));
                 let nextImage = shuffledImages[nextImageIndex];
                 sessionStorage.setItem('currentImage', nextImage);
