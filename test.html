@@ -50,12 +50,12 @@
     <div class="fullscreen-img">
         <img id="testImage" src="" alt="Test Image" style="max-width: 100%; max-height: 100%;">
     </div>
-    
+    <div class="timer" id="timer">0:00</div>
     <div class="controls">
         <button onclick="pauseTest()">暫停</button>
         <button onclick="nextImage()">下一張圖片</button>
     </div>
-    
+    <div class="counter" id="counter">已顯示: 0 張</div>
 
     <script>
         let images = [
@@ -99,8 +99,9 @@
         let currentImage = null;
         let startTime = null;
         let totalTime = 0;
-        let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || {};
+        let userAnswers = JSON.parse(sessionStorage.getItem('userAnswers')) || [];
         let timerInterval;
+        let pausedTime = parseInt(sessionStorage.getItem('pausedTime') || 0, 10);
         let shuffledImages = [];
         let lastImageWasSpecial = false;
 
@@ -115,14 +116,14 @@
         }
 
         function isShuffleValid(shuffled) {
-            for (let i = 0; i < shuffled.length - 1; i++) {
-                if (shuffled[i].includes('special') && shuffled[i + 1].includes('special')) {
-                    return false;
-                }
-            }
             for (let i = 0; i < 20; i++) {
                 const segment = shuffled.slice(i * 5, (i + 1) * 5);
                 if (!segment.some(img => img.includes('special'))) {
+                    return false;
+                }
+            }
+            for (let i = 0; i < shuffled.length - 1; i++) {
+                if (shuffled[i].includes('special') && shuffled[i + 1].includes('special')) {
                     return false;
                 }
             }
@@ -132,24 +133,18 @@
         function showImage(image) {
             const imgElement = document.getElementById('testImage');
             imgElement.src = image;
-            startTime = Date.now();
-            updateCounter();
+            startTime = Date.now() - pausedTime;
         }
 
         function updateTimer() {
             const timer = document.getElementById('timer');
-            timerInterval = setInterval(() => {
+            setInterval(() => {
                 const now = Date.now();
                 const elapsed = Math.floor((now - startTime) / 1000);
                 const minutes = Math.floor(elapsed / 60);
                 const seconds = elapsed % 60;
                 timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
             }, 1000);
-        }
-
-        function updateCounter() {
-            const counter = document.getElementById('counter');
-            counter.textContent = `已顯示: ${shownImages.length} 張`;
         }
 
         function nextImage() {
@@ -189,6 +184,7 @@
                 sessionStorage.setItem('currentImage', currentImage);
                 sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
                 sessionStorage.setItem('totalTime', totalTime);
+                sessionStorage.setItem('pausedTime', timeSpent);
                 window.location.href = 'pause.html';
             }
         }
@@ -201,6 +197,11 @@
             sessionStorage.setItem('totalTime', totalTime);
             sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
             window.location.href = 'finish.html';
+        }
+
+        function updateCounter() {
+            const counter = document.getElementById('counter');
+            counter.textContent = `已顯示: ${shownImages.length} 張`;
         }
 
         document.getElementById('testImage').onload = function() {
