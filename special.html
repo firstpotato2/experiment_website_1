@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
     <title>特殊圖片</title>
     <style>
         body, html {
@@ -77,12 +76,20 @@
         function nextImage() {
             clearInterval(timerInterval);
             let timeSpent = Date.now() - startTime;
-            let shownImages = JSON.parse(sessionStorage.getItem('shownImages'));
+            let shownImages = JSON.parse(sessionStorage.getItem('shownImages')) || [];
             shownImages.push({ image: currentImage, time: timeSpent });
             sessionStorage.setItem('shownImages', JSON.stringify(shownImages));
             sessionStorage.removeItem('pausedTime');
-            sessionStorage.setItem('comingFromSpecial', 'true');
-            window.location.href = 'question.html';
+
+            if (currentImage.includes('special')) {
+                window.location.href = 'question.html';
+            } else {
+                let nextImageIndex = shownImages.length;
+                let shuffledImages = JSON.parse(sessionStorage.getItem('shuffledImages'));
+                let nextImage = shuffledImages[nextImageIndex];
+                sessionStorage.setItem('currentImage', nextImage);
+                window.location.href = 'test.html';
+            }
         }
 
         function pauseTest() {
@@ -100,4 +107,3 @@
     </script>
 </body>
 </html>
-
