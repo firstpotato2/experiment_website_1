@@ -133,11 +133,12 @@
             const imgElement = document.getElementById('testImage');
             imgElement.src = image;
             startTime = Date.now();
+            updateCounter();
         }
 
         function updateTimer() {
             const timer = document.getElementById('timer');
-            setInterval(() => {
+            timerInterval = setInterval(() => {
                 const now = Date.now();
                 const elapsed = Math.floor((now - startTime) / 1000);
                 const minutes = Math.floor(elapsed / 60);
@@ -158,9 +159,11 @@
                 return;
             }
 
+            if (currentImage) {
+                shownImages.push({ image: currentImage, time: Date.now() - startTime });
+            }
+
             currentImage = shuffledImages[shownImages.length];
-            shownImages.push({ image: currentImage, time: Date.now() - startTime });
-            updateCounter();
 
             if (currentImage.includes('special')) {
                 lastImageWasSpecial = true;
@@ -173,6 +176,7 @@
                     lastImageWasSpecial = false;
                 }
                 showImage(currentImage);
+                updateCounter();
                 timerInterval = setInterval(updateTimer, 1000);
             }
         }
@@ -214,7 +218,6 @@
             } else {
                 nextImage();
             }
-            updateCounter();
             timerInterval = setInterval(updateTimer, 1000);
         };
 
