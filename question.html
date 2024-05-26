@@ -131,7 +131,7 @@
         function submitAnswer() {
             const selectedOption = document.querySelector('input[name="answer"]:checked');
             if (selectedOption) {
-                userAnswers.push({ image: currentImage, answer: selectedOption.value });
+                userAnswers.push(selectedOption.value);
                 sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
                 let nextImageIndex = shownImages.length;
                 let shuffledImages = JSON.parse(sessionStorage.getItem('shuffledImages'));
@@ -149,4 +149,3 @@
     </script>
 </body>
 </html>
-
