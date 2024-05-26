@@ -58,13 +58,13 @@
                 "images/B/special/image (10).jpg": "D"
             };
 
-            let correctCount = userAnswers.reduce((acc, answer, index) => {
-                if (correctAnswers[shownImages[index].image] === answer) {
+            let correctCount = Object.keys(userAnswers).reduce((acc, key) => {
+                if (correctAnswers[key] === userAnswers[key]) {
                     acc++;
                 }
                 return acc;
             }, 0);
-            let accuracy = (correctCount / userAnswers.length) * 100;
+            let accuracy = (correctCount / Object.keys(userAnswers).length) * 100;
 
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += "Image,Time(s),Group\n";
@@ -82,7 +82,7 @@
             csvContent += `Total Time B (s),${(totalTimeB / 1000).toFixed(2)}\n`;
             csvContent += "\nCorrect Answers,User Answers\n";
             Object.keys(correctAnswers).forEach((key, index) => {
-                csvContent += `Question ${index + 1},${correctAnswers[key]},${userAnswers[index] || ''}\n`;
+                csvContent += `Question ${index + 1},${correctAnswers[key]},${userAnswers[key] || ''}\n`;
             });
             csvContent += `\nAccuracy,${accuracy.toFixed(2)}%\n`;
 
